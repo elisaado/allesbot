@@ -1,0 +1,20 @@
+name: Build and push frontend
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker images
+      run: |
+        docker build --file apps/frontend/Dockerfile -t registry.elisaado.com/huisartssaado/huisartssaado-frontend:${{github.run_number}} .
+    - name: Push the Docker images
+      run: |
+        docker push registry.elisaado.com/huisartssaado/huisartssaado-frontend:${{github.run_number}}
