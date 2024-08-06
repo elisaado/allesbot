@@ -22,7 +22,6 @@ jobs:
     - name: Build and push the Docker images
       uses: docker/build-push-action@v6
       with:
-        registry: ghcr.io
         push: true
-        tags: elisaado/allesbot:latest
+        tags: ghcr.io/elisaado/allesbot:latest
 
