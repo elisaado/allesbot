@@ -12,7 +12,11 @@ let env = envSchema.safeParse(process.env);
 
 if (!env.success) {
   console.error("Invalid environment variables");
-  console.error("Make sure to create a .env file with DISCORD_TOKEN");
+
+  for (const error of env.error.errors) {
+    console.error(error.message, error.path);
+  }
+
   process.exit(1);
 }
 
