@@ -20,5 +20,5 @@ COPY --from=builder --chown=allesbot:nodejs /app/package*.json ./
 VOLUME ["/app/db"]
 
 
-RUN npm install --only=production
+RUN npm install --omit dev
 CMD ["node", "dist/index.js"]
