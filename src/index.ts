@@ -21,8 +21,8 @@ const client = new Client({
   ],
 });
 
-client.on("ready", () => {
-  console.log(`Logged in as ${client.user?.tag}`);
+client.on("ready", (client) => {
+  console.log(`Logged in as ${client.user.tag}`);
 
   registerCommand("help", {
     name: "help",
