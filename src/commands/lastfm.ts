@@ -8,8 +8,8 @@ const client = new SimpleFM(env.LASTFM_API_KEY);
 
 registerCommand("np", {
   name: "np",
-  description: "Shows your currently playing track",
-  handle: async (message, _) => {
+  description: "Shows your or someone else's currently playing track",
+  handle: async (message, args) => {
     function getUsername(): Promise<string | null> {
       return new Promise((resolve, reject) => {
         db.get(
@@ -39,10 +39,10 @@ registerCommand("np", {
       });
     }
 
-    const username = await getUsername();
+    const username = args[0] !== undefined ? args[0] : await getUsername();
 
     if (!username) {
-      message.reply("No Last.fm username set. Use `setnpuser` to set it");
+      message.reply("No Last.fm username set. Use `setnpuser` to set it. You can also use `np <username>` to get the currently playing track of a different user.");
       return;
     }
 
