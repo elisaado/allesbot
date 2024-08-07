@@ -42,7 +42,7 @@ registerCommand("np", {
     const username = args[0] !== undefined ? args[0] : await getUsername();
 
     if (!username) {
-      message.reply("No Last.fm username set. Use `setnpuser` to set it. You can also use `np <username>` to get the now playing of a different user.");
+      message.reply("No Last.fm username set. Use `setnpuser` to set it. You can also use `np <username>` to get the currently playing track of a different user.");
       return;
     }
 
