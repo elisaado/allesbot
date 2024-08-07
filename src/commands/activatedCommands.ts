@@ -1,2 +1,2 @@
-import * as a from "./ping.js";
-import * as b from "./lastfm.js";
+import "./ping.js";
+import "./lastfm.js";
