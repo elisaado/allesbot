@@ -40,6 +40,7 @@ registerCommand("np", {
     }
 
     const username = args[0] !== undefined ? args[0] : await getUsername();
+	const usernameByArgs = args[0] !== undefined;
 
     if (!username) {
       message.reply("No Last.fm username set. Use `setnpuser` to set it. You can also use `np <username>` to get the currently playing track of a different user.");
@@ -56,8 +57,8 @@ registerCommand("np", {
         embeds: [
           {
             author: {
-              name: " •  Now Playing",
-              icon_url: message.author.displayAvatarURL(),
+              name: `${usernameByArgs ? username : ""} •  Now Playing`,
+              icon_url: usernameByArgs ? undefined : message.author.displayAvatarURL(),
             },
             title: track.name,
             description: `**${track.artist?.name}** on *${track.album?.name}*`,
