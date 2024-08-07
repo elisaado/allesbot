@@ -40,16 +40,29 @@ registerCommand("np", {
     }
 
     const username = args[0] !== undefined ? args[0] : await getUsername();
-	const usernameByArgs = args[0] !== undefined;
+    const usernameByArgs = args[0] !== undefined;
 
     if (!username) {
-      message.reply("No Last.fm username set. Use `setnpuser` to set it. You can also use `np <username>` to get the currently playing track of a different user.");
+      message.reply(
+        "No Last.fm username set. Use `setnpuser` to set it. You can also use `np <username>` to get the currently playing track of a different user."
+      );
       return;
     }
 
-    const json = await client.user.getRecentTracks({
-      username,
-    });
+    const json = await client.user
+      .getRecentTracks({
+        username,
+      })
+      .catch((err) => {
+        console.error(err);
+        return err;
+      });
+
+    if (json.error || !json.tracks) {
+      message.reply("An error occurred");
+      return;
+    }
+
     const track = json.tracks[0];
 
     if (json.search.nowPlaying && track) {
@@ -57,8 +70,10 @@ registerCommand("np", {
         embeds: [
           {
             author: {
-              name: `${usernameByArgs ? username : ""} •  Now Playing`,
-              icon_url: usernameByArgs ? undefined : message.author.displayAvatarURL(),
+              name: `${usernameByArgs ? username : ""}  •  Now Playing`,
+              icon_url: usernameByArgs
+                ? undefined
+                : message.author.displayAvatarURL(),
             },
             title: track.name,
             description: `**${track.artist?.name}** on *${track.album?.name}*`,
@@ -88,6 +103,6 @@ registerCommand("setnpuser", {
       "INSERT INTO users (discord_id, lastfm_username) VALUES (?, ?) ON CONFLICT(discord_id) DO UPDATE SET lastfm_username = ?",
       [message.author.id, args[0], args[0]]
     );
-    message.reply(`Username set to ${args[0]}`);
+    message.reply(`Username set!`);
   },
 });
