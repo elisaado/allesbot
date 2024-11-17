@@ -3,7 +3,6 @@ import env from "../env.js";
 import { registerCommand } from "../commandHandler.js";
 import SimpleFM from "@solely/simple-fm";
 import db from "../db.js";
-import { command } from "neovim/lib/plugin/command.js";
 
 const client = new SimpleFM(env.LASTFM_API_KEY);
 

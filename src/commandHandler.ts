@@ -1,5 +1,4 @@
 import type { Message } from "discord.js";
-import { command } from "neovim/lib/plugin/command.js";
 
 export type Handler = {
   handle: (message: Message, args: string[]) => void;

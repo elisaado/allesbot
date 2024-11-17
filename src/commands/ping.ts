@@ -1,4 +1,3 @@
-import { command } from "neovim/lib/plugin/command.js";
 import { registerCommand } from "../commandHandler.js";
 
 registerCommand({
