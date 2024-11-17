@@ -3,11 +3,13 @@ import env from "../env.js";
 import { registerCommand } from "../commandHandler.js";
 import SimpleFM from "@solely/simple-fm";
 import db from "../db.js";
+import { command } from "neovim/lib/plugin/command.js";
 
 const client = new SimpleFM(env.LASTFM_API_KEY);
 
-registerCommand("np", {
+registerCommand({
   name: "np",
+  command: "np",
   description: "Shows your or someone else's currently playing track",
   handle: async (message, args) => {
     function getUsername(): Promise<string | null> {
@@ -34,7 +36,7 @@ registerCommand("np", {
             }
 
             resolve(null);
-          }
+          },
         );
       });
     }
@@ -44,7 +46,7 @@ registerCommand("np", {
 
     if (!username) {
       message.reply(
-        "No Last.fm username set. Use `setnpuser` to set it. You can also use `np <username>` to get the currently playing track of a different user."
+        "No Last.fm username set. Use `setnpuser` to set it. You can also use `np <username>` to get the currently playing track of a different user.",
       );
       return;
     }
@@ -90,8 +92,9 @@ registerCommand("np", {
   },
 });
 
-registerCommand("setnpuser", {
+registerCommand({
   name: "setnpuser",
+  command: "setnpuser",
   description: "Sets the Last.fm username",
   handle: async (message, args) => {
     if (args.length === 0) {
@@ -101,7 +104,7 @@ registerCommand("setnpuser", {
 
     db.run(
       "INSERT INTO users (discord_id, lastfm_username) VALUES (?, ?) ON CONFLICT(discord_id) DO UPDATE SET lastfm_username = ?",
-      [message.author.id, args[0], args[0]]
+      [message.author.id, args[0], args[0]],
     );
     message.reply(`Username set!`);
   },

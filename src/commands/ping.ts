@@ -1,7 +1,9 @@
+import { command } from "neovim/lib/plugin/command.js";
 import { registerCommand } from "../commandHandler.js";
 
-registerCommand("ping", {
+registerCommand({
   name: "ping",
+  command: "ping",
   description: "Replies with pong and the latency",
   handle: (message, _) => {
     const now = Date.now();
@@ -10,8 +12,9 @@ registerCommand("ping", {
   },
 });
 
-registerCommand("editPing", {
+registerCommand({
   name: "editPing",
+  command: "editPing",
   description: "Measures the latency by editing the message",
   handle: (message, _) => {
     message.channel.send("Pinging...").then((sent) => {
