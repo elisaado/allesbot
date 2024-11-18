@@ -14,14 +14,24 @@ registerCommand({
       return;
     }
 
-    const match = message.content.match(/^\.s\/(.*)\/(.*)(\/(.*))?$/);
+    const match = message.content.match(/^\.s\/(.*?)\/(.*?)(\/(.*))?$/);
     if (!match) {
       return;
     }
 
-    const [, find, replace] = match;
+    const [, find, replace, , options] = match;
     if (find == null || replace == null) {
       return;
+    }
+    if (options) {
+      if (options.match(/[^gmi]/)) {
+        return message.reply("Duplicate regex options");
+      }
+
+      const splitted = options.split("");
+      if (new Set(splitted).size !== splitted.length) {
+        return message.reply("Invalid regex options");
+      }
     }
     const reply = message.channel.messages.cache.get(
       message.reference.messageId,
@@ -34,7 +44,10 @@ registerCommand({
       return;
     }
 
-    const newContent = reply.content.replace(new RegExp(find, "g"), replace);
+    const newContent = reply.content.replace(
+      new RegExp(find, options ?? "g"),
+      replace,
+    );
     if (newContent.length > 1000) {
       message.reply("Resulting message is te lang aapje");
       return;
