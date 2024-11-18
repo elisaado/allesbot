@@ -44,7 +44,7 @@ export const handleCommand = (message: Message) => {
 
   regexHandlers.find((handler) => {
     if (handler.command instanceof RegExp) {
-      if (handler.command.test(prefixedCommand)) {
+      if (handler.command.test(message.content)) {
         handler.handle(message, content.slice(1));
         return true;
       }
