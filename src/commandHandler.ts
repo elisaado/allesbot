@@ -6,6 +6,7 @@ export type Handler = {
   custom?: false;
   description: string;
   command: string | RegExp;
+  showInHelp?: boolean;
 };
 
 export type CustomHandler = Omit<Handler, "custom"> & {
