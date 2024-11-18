@@ -35,6 +35,7 @@ client.on("ready", (client) => {
       const regexHandlers = getRegexHandlers();
       const commands = [Object.values(handlers), regexHandlers]
         .flat()
+        .filter((handler) => handler.showInHelp !== false)
         .map((handler) => {
           const { name, description, command } = handler;
           let commandString =
