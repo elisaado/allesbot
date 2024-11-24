@@ -3,7 +3,7 @@ import { registerCommand } from "../commandHandler.js";
 registerCommand({
   name: "funny",
   command:
-    /^((alles is stuk)|(stomme bot)|(ik haat allesbot)|(waarom kan allesbot (.*) niet))$/i,
+    /^((alles is stuk)|(stomme bot)|(alles( )?bot is stom)|(ik haat alles( )?bot)|(waarom kan alles( )?bot (.*) niet))$/i,
   description: "grappig (geen commando)",
   showInHelp: false,
   handle: async (message, args) => {
