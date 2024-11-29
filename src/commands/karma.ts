@@ -4,6 +4,24 @@ import client from "../index.js";
 
 registerCommand({
   name: "karma",
+  command: "karma",
+  description: "Get karma of something",
+  handle: (message, _) => {
+    if (message.author.bot) return;
+    const subject = message.content.split(" ").slice(1).join(" ").toLowerCase();
+    if (!subject) return;
+
+    getKarma(subject).then((karma) => {
+      message.reply({
+        allowedMentions: { repliedUser: false, users: [], parse: [] },
+        content: `${subject} has **${karma} karma**`,
+      });
+    });
+  },
+});
+
+registerCommand({
+  name: "set karma",
   command: /^(.+)((\+\+)|(\-\-))$/,
   description: "Increase or decrease karma of something",
   handle: (message, _) => {
@@ -34,6 +52,9 @@ registerCommand({
         });
       });
     });
+
+    // dit moet natuurlijk ook
+    setKarma("allesbot", 9999999);
   },
 });
 
