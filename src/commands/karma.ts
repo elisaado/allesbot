@@ -11,7 +11,7 @@ registerCommand({
     const match = message.content.match(/^(.+)((\+\+)|(\-\-))$/);
     if (!match) return;
 
-    const subject = match[1];
+    const subject = match[1]?.trim();
     if (!subject) return;
     const increase = match[2] === "++";
     if (subject === "karma") {
@@ -22,12 +22,15 @@ registerCommand({
       return;
     }
 
+    // copy to new variable to keep original for readability in reply
+    const lowerSubject = subject.toLowerCase();
+
     // TODO: (ooit) dit efficienter (en concurrency safe) maken door het in 1 query (transaction) te doen
-    getKarma(subject).then((karma) => {
-      setKarma(subject, karma + (increase ? 1 : -1)).then(() => {
+    getKarma(lowerSubject).then((karma) => {
+      setKarma(lowerSubject, karma + (increase ? 1 : -1)).then(() => {
         message.reply({
           allowedMentions: { repliedUser: false, users: [], parse: [] },
-          content: `${subject} now has ${karma + (increase ? 1 : -1)} karma`,
+          content: `${subject} now has **${karma + (increase ? 1 : -1)} karma**`,
         });
       });
     });
