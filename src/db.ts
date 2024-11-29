@@ -10,6 +10,13 @@ db.serialize(() => {
         lastfm_username TEXT NOT NULL
         )
     `);
+
+  db.run(`
+        CREATE TABLE IF NOT EXISTS karma (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        subject TEXT NOT NULL UNIQUE,
+        karma INTEGER NOT NULL
+  )`);
 });
 
 export default db;
