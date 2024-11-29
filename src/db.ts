@@ -17,6 +17,13 @@ db.serialize(() => {
         subject TEXT NOT NULL UNIQUE,
         karma INTEGER NOT NULL
   )`);
+
+  db.run(`
+        CREATE TABLE IF NOT EXISTS fipo (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        discord_id TEXT NOT NULL UNIQUE,
+        fipos INTEGER NOT NULL
+  )`);
 });
 
 export default db;
