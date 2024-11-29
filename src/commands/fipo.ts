@@ -55,3 +55,64 @@ registerCommand({
     }, 1000);
   },
 });
+
+registerCommand({
+  name: "Fipo Statistics",
+  command: "fipostats",
+  description: "Check the fipo stats",
+
+  handle: async (message, _) => {
+    // sorry dit is echt superbrak :D
+    db.all("SELECT * FROM fipo", (err, rows) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+
+      if (typeof rows === "undefined" || rows === null) {
+        return;
+      }
+
+      if (!Array.isArray(rows)) {
+        return;
+      }
+
+      const fipos = (rows as { discord_id: string; fipos: number }[])
+        .sort((a, b) => b.fipos - a.fipos)
+        .reduce(
+          (
+            acc: {
+              rows: { fipos: number; name: string }[];
+              longestName: number;
+            },
+            r,
+          ) => {
+            const user = message.guild?.members.cache.get(r.discord_id)?.user;
+            if (!user) {
+              return acc;
+            }
+
+            const name = user.username;
+            const longestName = Math.max(acc.longestName, name.length);
+
+            acc.rows.push({ name, fipos: r.fipos });
+            acc.longestName = longestName;
+
+            return acc;
+          },
+          { rows: [], longestName: 0 },
+        );
+
+      const stats = fipos.rows
+        .map((r) => {
+          return `${r.name.padEnd(fipos.longestName + 2)}: ${r.fipos}`;
+        })
+        .join("\n");
+
+      message.reply({
+        allowedMentions: { repliedUser: false, users: [], parse: [] },
+        content: `Fipo stats:\n${stats}`,
+      });
+    });
+  },
+});
