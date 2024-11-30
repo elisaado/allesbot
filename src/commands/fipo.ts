@@ -3,7 +3,7 @@ import { registerCommand } from "../commandHandler.js";
 import db from "../db.js";
 
 let todaysFipos: Message<boolean>[] = [];
-let recordedDate = 0;
+let recordedDate = "0";
 
 registerCommand({
   name: "fipo",
@@ -13,8 +13,11 @@ registerCommand({
     if (message.author.bot) return;
 
     // check if we need to reset the fipo
-    if (recordedDate !== new Date().getDate()) {
-      recordedDate = new Date().getDate();
+    if (
+      recordedDate !==
+      new Date().toLocaleDateString("nl-NL", { day: "numeric" })
+    ) {
+      recordedDate = new Date().toLocaleDateString("nl-NL", { day: "numeric" });
       todaysFipos = [];
     }
 
