@@ -54,7 +54,11 @@ registerCommand({
       let alreadyDone = false;
       db.get(
         "SELECT * FROM fipos WHERE date = ?",
-        [new Date(fipo.createdTimestamp).toISOString()],
+        [
+          new Date(
+            new Date(fipo.createdTimestamp).setHours(0, 0, 0, 0),
+          ).toISOString(),
+        ],
         (err, row) => {
           if (err) {
             console.error(err);
@@ -75,7 +79,9 @@ registerCommand({
 
       db.run("INSERT INTO fipos (discord_id, date) VALUES (?, ?)", [
         fipo.author.id,
-        new Date(fipo.createdTimestamp).toISOString(),
+        new Date(
+          new Date(fipo.createdTimestamp).setHours(0, 0, 0, 0),
+        ).toISOString(),
       ]);
     }, 1000);
   },
