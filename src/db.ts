@@ -18,11 +18,16 @@ db.serialize(() => {
         karma INTEGER NOT NULL
   )`);
 
+  // delete old fipo table
   db.run(`
-        CREATE TABLE IF NOT EXISTS fipo (
+        DROP TABLE IF EXISTS fipo
+    `);
+
+  db.run(`
+        CREATE TABLE IF NOT EXISTS fipos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        discord_id TEXT NOT NULL UNIQUE,
-        fipos INTEGER NOT NULL
+        discord_id TEXT NOT NULL,
+        date TEXT NOT NULL
   )`);
 });
 

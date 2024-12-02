@@ -15,9 +15,16 @@ registerCommand({
     // check if we need to reset the fipo
     if (
       recordedDate !==
-      new Date().toLocaleDateString("nl-NL", { day: "numeric" })
+      new Date().toLocaleDateString("nl-NL", {
+        day: "numeric",
+        timeZone: "Europe/Amsterdam",
+      })
     ) {
-      recordedDate = new Date().toLocaleDateString("nl-NL", { day: "numeric" });
+      recordedDate = new Date().toLocaleDateString("nl-NL", {
+        day: "numeric",
+        timeZone: "Europe/Amsterdam",
+      });
+
       todaysFipos = [];
     }
 
@@ -41,20 +48,10 @@ registerCommand({
 
       message.channel.send("W00t " + fipo.author.toString() + "!");
 
-      db.run("INSERT OR IGNORE INTO fipo (discord_id, fipos) VALUES (?, 0)", [
+      db.run("INSERT INTO fipos (discord_id, date) VALUES (?, ?)", [
         fipo.author.id,
+        new Date(fipo.createdTimestamp).toISOString(),
       ]);
-
-      db.run(
-        "UPDATE fipo SET fipos = fipos + 1 WHERE discord_id = ?",
-        [fipo.author.id],
-        (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-        },
-      );
     }, 1000);
   },
 });
@@ -66,7 +63,7 @@ registerCommand({
 
   handle: async (message, _) => {
     // sorry dit is echt superbrak :D
-    db.all("SELECT * FROM fipo", (err, rows) => {
+    db.all("SELECT * FROM fipos", (err, rows) => {
       if (err) {
         console.error(err);
         return;
@@ -80,41 +77,36 @@ registerCommand({
         return;
       }
 
-      const fipos = (rows as { discord_id: string; fipos: number }[])
-        .sort((a, b) => b.fipos - a.fipos)
-        .reduce(
-          (
-            acc: {
-              rows: { fipos: number; name: string }[];
-              longestName: number;
-            },
-            r,
-          ) => {
-            const user = message.guild?.members.cache.get(r.discord_id)?.user;
-            if (!user) {
-              return acc;
-            }
+      const fipos = (rows as { discord_id: string; date: string }[]).reduce(
+        (acc, row) => {
+          const user = (acc[row.discord_id] ?? 0) + 1;
+          acc[row.discord_id] = user;
 
-            const name = user.username;
-            const longestName = Math.max(acc.longestName, name.length);
+          return acc;
+        },
+        {} as { [key: string]: number },
+      );
 
-            acc.rows.push({ name, fipos: r.fipos });
-            acc.longestName = longestName;
+      const fiposArray = Object.entries(fipos).map(([discord_id, fipos]) => {
+        const name =
+          message.guild?.members.cache.get(discord_id)?.displayName ??
+          "Unknown";
+        return { name, fipos };
+      });
 
-            return acc;
-          },
-          { rows: [], longestName: 0 },
-        );
+      fiposArray.sort((a, b) => b.fipos - a.fipos);
 
-      const stats = fipos.rows
-        .map((r) => {
-          return `${r.name.padEnd(fipos.longestName + 2)}: ${r.fipos}`;
-        })
-        .join("\n");
+      const longestName = fiposArray.reduce((acc, row) => {
+        return Math.max(acc, row.name.length);
+      }, 0);
 
       message.reply({
         allowedMentions: { repliedUser: false, users: [], parse: [] },
-        content: `Fipo stats:\n${stats}`,
+        content: `Fipo stats:\n${fiposArray
+          .map((r) => {
+            return `${r.name.padEnd(longestName + 2)}: ${r.fipos}`;
+          })
+          .join("\n")}`,
       });
     });
   },
