@@ -46,6 +46,31 @@ registerCommand({
         return;
       }
 
+      // check if fipo is already done
+      // if the bot restarts, the "todaysFipos" array will be reset,
+      // but the database will still have the fipo
+
+      // the array is still needed though, to not start a lot of timeouts
+      let alreadyDone = false;
+      db.get(
+        "SELECT * FROM fipos WHERE date = ?",
+        [new Date(fipo.createdTimestamp).toISOString()],
+        (err, row) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+
+          if (row) {
+            alreadyDone = true;
+          }
+        },
+      );
+
+      if (alreadyDone) {
+        return;
+      }
+
       message.channel.send("W00t " + fipo.author.toString() + "!");
 
       db.run("INSERT INTO fipos (discord_id, date) VALUES (?, ?)", [
