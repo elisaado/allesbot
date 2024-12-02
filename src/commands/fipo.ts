@@ -142,3 +142,25 @@ registerCommand({
     });
   },
 });
+
+registerCommand({
+  name: "Fipo Reset",
+  command: "fiporeset",
+  description: "Reset the fipo stats",
+  showInHelp: false,
+
+  handle: async (message, _) => {
+    if (message.author.id !== "783447871596920892") {
+      message.reply("You are not allowed to do that!");
+      return;
+    }
+    db.run("DELETE FROM fipos", (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+
+      message.reply("Fipo stats reset!");
+    });
+  },
+});
