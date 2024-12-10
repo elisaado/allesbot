@@ -174,6 +174,9 @@ registerCommand({
         return;
       }
 
+      todaysFipos = [];
+      recordedDate = "0";
+
       message.reply("Fipo stats reset!");
     });
   },
