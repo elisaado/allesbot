@@ -39,7 +39,15 @@ registerCommand({
     setTimeout(async () => {
       const fipo = todaysFipos
         .filter((a) => {
-          return a.createdTimestamp >= new Date().setHours(0, 0, 0, 0);
+          return (
+            a.createdTimestamp >=
+            new Date(new Date().toLocaleDateString("nl-NL")).setHours(
+              0,
+              0,
+              0,
+              0,
+            )
+          );
         })
         .sort((a, b) => {
           return a.createdTimestamp - b.createdTimestamp;
