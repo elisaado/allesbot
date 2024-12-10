@@ -36,10 +36,14 @@ registerCommand({
     }
 
     // wait 1 seconds to allow more fipos to come in, then grab the earliest one
-    setTimeout(() => {
-      const fipo = todaysFipos.sort((a, b) => {
-        return a.createdTimestamp - b.createdTimestamp;
-      })[0];
+    setTimeout(async () => {
+      const fipo = todaysFipos
+        .filter((a) => {
+          return a.createdTimestamp >= new Date().setHours(0, 0, 0, 0);
+        })
+        .sort((a, b) => {
+          return a.createdTimestamp - b.createdTimestamp;
+        })[0];
 
       if (!fipo) {
         console.error("no fipo found in timeout");
@@ -51,25 +55,27 @@ registerCommand({
       // but the database will still have the fipo
 
       // the array is still needed though, to not start a lot of timeouts
-      let alreadyDone = false;
-      db.get(
-        "SELECT * FROM fipos WHERE date = ?",
-        [
-          new Date(
-            new Date(fipo.createdTimestamp).setHours(0, 0, 0, 0),
-          ).toISOString(),
-        ],
-        (err, row) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
 
-          if (row) {
-            alreadyDone = true;
-          }
-        },
-      );
+      let alreadyDone = await (() => {
+        return new Promise((resolve) => {
+          db.get(
+            "SELECT * FROM fipos WHERE date = ?",
+            [
+              new Date(
+                new Date(fipo.createdTimestamp).setHours(0, 0, 0, 0),
+              ).toISOString(),
+            ],
+            (err, row) => {
+              if (err) {
+                console.error(err);
+                return;
+              }
+
+              resolve(row != null);
+            },
+          );
+        });
+      })();
 
       if (alreadyDone) {
         return;
