@@ -52,6 +52,14 @@ client.on("ready", (client) => {
   });
 });
 
+function exitGracefully() {
+  db.close();
+  process.exit();
+}
+
+process.on("SIGTERM", exitGracefully);
+process.on("SIGINT", exitGracefully);
+
 client.on("messageCreate", handleCommand);
 
 client.login(env.DISCORD_TOKEN);
