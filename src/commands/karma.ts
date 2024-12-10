@@ -6,16 +6,16 @@ registerCommand({
   name: "karma",
   command: "karma",
   description: "Get karma of something",
-  handle: (message, _) => {
+  handle: async (message, _) => {
     if (message.author.bot) return;
     const subject = message.content.split(" ").slice(1).join(" ").toLowerCase();
     if (!subject) return;
 
-    getKarma(subject).then((karma) => {
-      message.reply({
-        allowedMentions: { repliedUser: false, users: [], parse: [] },
-        content: `${subject} has **${karma} karma**`,
-      });
+    const karma = await getKarma(subject);
+
+    message.reply({
+      allowedMentions: { repliedUser: false, users: [], parse: [] },
+      content: `${subject} has **${karma} karma**`,
     });
   },
 });
@@ -52,13 +52,14 @@ registerCommand({
         });
       });
     });
-
-    // dit moet natuurlijk ook
-    setKarma("allesbot", 9999999);
   },
 });
 
 function getKarma(subject: string): Promise<number> {
+  if (subject.match(/alles( )?bot/i)) {
+    return Promise.resolve(9999999);
+  }
+
   return new Promise<number>((resolve, reject) => {
     db.get(
       "SELECT karma FROM karma WHERE subject = ?",
