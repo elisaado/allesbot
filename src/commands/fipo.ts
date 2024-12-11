@@ -3,7 +3,7 @@ import { registerCommand } from "../commandHandler.js";
 import db from "../db.js";
 
 let todaysFipos: Message<boolean>[] = [];
-let recordedDate = "0";
+let recordedDate = "0-0-000";
 
 registerCommand({
   name: "fipo",
@@ -14,16 +14,9 @@ registerCommand({
 
     // check if we need to reset the fipo
     if (
-      recordedDate !==
-      new Date().toLocaleDateString("nl-NL", {
-        day: "numeric",
-        timeZone: "Europe/Amsterdam",
-      })
+      recordedDate !== getAsStringDateWithCorrectTimezoneForReal(new Date())
     ) {
-      recordedDate = new Date().toLocaleDateString("nl-NL", {
-        day: "numeric",
-        timeZone: "Europe/Amsterdam",
-      });
+      recordedDate = getAsStringDateWithCorrectTimezoneForReal(new Date());
 
       todaysFipos = [];
     }
@@ -40,13 +33,9 @@ registerCommand({
       const fipo = todaysFipos
         .filter((a) => {
           return (
-            a.createdTimestamp >=
-            new Date(new Date().toLocaleDateString("nl-NL")).setHours(
-              0,
-              0,
-              0,
-              0,
-            )
+            getDayOfDateWithCorrectTimezoneForReal(
+              new Date(a.createdTimestamp),
+            ) === getDayOfDateWithCorrectTimezoneForReal(new Date())
           );
         })
         .sort((a, b) => {
@@ -69,9 +58,9 @@ registerCommand({
           db.get(
             "SELECT * FROM fipos WHERE date = ?",
             [
-              new Date(
-                new Date(fipo.createdTimestamp).setHours(0, 0, 0, 0),
-              ).toISOString(),
+              getAsStringDateWithCorrectTimezoneForReal(
+                new Date(fipo.createdTimestamp),
+              ),
             ],
             (err, row) => {
               if (err) {
@@ -86,6 +75,7 @@ registerCommand({
       })();
 
       if (alreadyDone) {
+        console.log({ fipoAlreadyDone: alreadyDone });
         return;
       }
 
@@ -93,9 +83,9 @@ registerCommand({
 
       db.run("INSERT INTO fipos (discord_id, date) VALUES (?, ?)", [
         fipo.author.id,
-        new Date(
-          new Date(fipo.createdTimestamp).setHours(0, 0, 0, 0),
-        ).toISOString(),
+        getAsStringDateWithCorrectTimezoneForReal(
+          new Date(fipo.createdTimestamp),
+        ),
       ]);
     }, 1000);
   },
@@ -181,3 +171,19 @@ registerCommand({
     });
   },
 });
+
+function getAsStringDateWithCorrectTimezoneForReal(date: Date) {
+  return date.toLocaleString("nl-NL", {
+    timeZone: "Europe/Amsterdam",
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+  });
+}
+
+function getDayOfDateWithCorrectTimezoneForReal(date: Date) {
+  return date.toLocaleDateString("nl-NL", {
+    day: "numeric",
+    timeZone: "Europe/Amsterdam",
+  });
+}
