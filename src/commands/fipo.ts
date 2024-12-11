@@ -25,6 +25,7 @@ registerCommand({
 
     if (todaysFipos.length > 1) {
       // setTimeout already running or fipo already done, no need to start it
+      console.log({ fipoAlreadyRunning: true });
       return;
     }
 
