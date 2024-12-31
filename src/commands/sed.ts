@@ -44,7 +44,7 @@ registerCommand({
       return;
     }
 
-	const oldContent = reply.content || reply.embeds?.[0]?.description;
+    const oldContent = reply.content || reply.embeds?.[0]?.description || "";
     const newContent = oldContent.replace(
       new RegExp(find, options ?? "g"),
       replace,
