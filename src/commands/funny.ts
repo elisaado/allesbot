@@ -17,6 +17,6 @@ registerCommand({
       );
       message = referencedMessage;
     }
-    message.reply("maak een pr dan :) https://github.com/elisaado/allesbot");
+    message.reply("maak een pr dan :) <https://github.com/elisaado/allesbot>");
   },
 });
