@@ -139,11 +139,11 @@ registerCommand({
 
       message.reply({
         allowedMentions: { repliedUser: false, users: [], parse: [] },
-        content: `Fipo stats:\n${fiposArray
+        content: `# Fipo stats:\n\`\`\`\n${fiposArray
           .map((r) => {
             return `${r.name.padEnd(longestName + 2)}: ${r.fipos}`;
           })
-          .join("\n")}`,
+          .join("\n")}\n\`\`\``,
       });
     });
   },
