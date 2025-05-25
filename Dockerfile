@@ -3,7 +3,8 @@ FROM node:lts-alpine AS base
 FROM base AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN apk add --update --no-cache python3 make gcc g++
+RUN apk add --update --no-cache python3 py3-pip make gcc g++ 
+RUN python3 -m pip install setuptools
 RUN npm install
 COPY . .
 RUN npm run build
