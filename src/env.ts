@@ -4,6 +4,7 @@ const envSchema = z.object({
   DISCORD_TOKEN: z.string(),
   LASTFM_API_KEY: z.string(),
   LASTFM_API_SECRET: z.string(),
+  BEKEND_ROLE_ID: z.string(),
 });
 
 import "dotenv/config";
