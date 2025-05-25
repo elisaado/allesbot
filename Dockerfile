@@ -4,6 +4,7 @@ FROM base AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN apk add --update --no-cache python3 py3-pip make gcc g++
+RUN ln -sf /usr/bin/python3 /usr/bin/python
 RUN npm install
 COPY . .
 RUN npm run build
