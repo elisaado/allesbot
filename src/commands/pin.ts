@@ -8,8 +8,8 @@ registerCommand({
   description: "pin een bericht",
   handle: async (message, _) => {
     if (!message.member?.roles.cache.has(env.BEKEND_ROLE_ID))
-      return message.reply(
-        "ik ben niet jouw vried, laat dat ook even duidelijk zijn",
+      return await message.reply(
+        "ik ben niet jouw vriend, laat dat ook even duidelijk zijn",
       );
 
     if (
@@ -17,7 +17,7 @@ registerCommand({
       message.reference.messageId == null ||
       message.author.id === client.user?.id
     )
-      return message.reply("omg gebruik dit op een bericht ofz");
+      return await message.reply("omg gebruik dit op een bericht ofz");
 
     const msg = await message.fetchReference();
     if (msg.pinned) return message.reply("dit bericht is al gepind aapje");
@@ -32,8 +32,8 @@ registerCommand({
   description: "unpin een bericht",
   handle: async (message, _) => {
     if (!message.member?.roles.cache.has(env.BEKEND_ROLE_ID))
-      return message.reply(
-        "ik ben niet jouw vried, laat dat ook even duidelijk zijn",
+      return await message.reply(
+        "ik ben niet jouw vriend, laat dat ook even duidelijk zijn",
       );
 
     if (
@@ -41,11 +41,12 @@ registerCommand({
       message.reference.messageId == null ||
       message.author.id === client.user?.id
     )
-      return message.reply("omg gebruik dit op een bericht ofz");
+      return await message.reply("omg gebruik dit op een bericht ofz");
 
     const msg = await message.fetchReference();
     if (!msg.pinned) return message.reply("dit bericht is niet gepind aapje");
 
     await msg.unpin();
+    await message.reply("jo, succes met je leven");
   },
 });
