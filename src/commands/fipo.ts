@@ -1,6 +1,7 @@
 import type { Message } from "discord.js";
 import { registerCommand } from "../commandHandler.js";
 import db from "../db.js";
+import GraphemeSplitter from "grapheme-splitter";
 
 let todaysFipos: Message<boolean>[] = [];
 let recordedDate = "0-0-000";
@@ -137,11 +138,20 @@ registerCommand({
         return Math.max(acc, row.name.length);
       }, 0);
 
+      const splitter = new GraphemeSplitter();
+      const rpad = (str: string, length: number, pad: string) => {
+        const graphemes = splitter.splitGraphemes(str);
+        while (graphemes.length < length) {
+          graphemes.push(pad);
+        }
+        return graphemes.join('');
+      };
+
       message.reply({
         allowedMentions: { repliedUser: false, users: [], parse: [] },
         content: `# Fipo stats:\n\`\`\`\n${fiposArray
           .map((r) => {
-            return `${r.name.padEnd(longestName + 2)}: ${r.fipos}`;
+            return `${rpad(r.name, longestName + 2, ' ')}: ${r.fipos}`;
           })
           .join("\n")}\n\`\`\``,
       });
