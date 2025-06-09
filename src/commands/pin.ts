@@ -34,7 +34,7 @@ export async function handlePin(messageToPin: Message, member: GuildMember) {
     return await messageToPin.reply("dit bericht is al gepind aapje");
 
   await messageToPin.pin();
-  await messageToPin.reply("bericht gepind!");
+  await messageToPin.reply(`bericht gepind door <@${member.id}>!`);
 }
 
 export async function handleUnpin(
