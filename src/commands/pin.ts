@@ -47,7 +47,7 @@ export async function handlePin(
     return await messageToPin.reply("dit bericht is al gepind aapje");
 
   await msg.pin();
-  await messageToPin.reply("bericht gepind!");
+  await messageToPin.reply(`bericht gepind door <@${member.id}>!`);
 }
 
 export async function handleUnpin(
@@ -68,7 +68,7 @@ export async function handleUnpin(
     return await messageToUnpin.reply("dit bericht is niet gepind aapje");
 
   await msg.unpin();
-  await messageToUnpin.reply("bericht unpinned!");
+  await messageToUnpin.reply(`bericht geunpind door <@${member.id}>!`);
 }
 
 registerCommand({
