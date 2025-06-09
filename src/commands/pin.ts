@@ -30,9 +30,6 @@ export async function handlePin(messageToPin: Message, member: GuildMember) {
       "ik ben niet jouw vriend, laat dat ook even duidelijk zijn",
     );
 
-  if (messageToPin.author.id === client.user?.id)
-    return await messageToPin.reply("ik kan mijn eigen berichten niet pinnen");
-
   if (messageToPin.pinned)
     return await messageToPin.reply("dit bericht is al gepind aapje");
 
@@ -47,11 +44,6 @@ export async function handleUnpin(
   if (!member.roles.cache.has(env.BEKEND_ROLE_ID))
     return await messageToUnpin.reply(
       "ik ben niet jouw vriend, laat dat ook even duidelijk zijn",
-    );
-
-  if (messageToUnpin.author.id === client.user?.id)
-    return await messageToUnpin.reply(
-      "ik kan mijn eigen berichten niet unpinnen",
     );
 
   if (!messageToUnpin.pinned)
