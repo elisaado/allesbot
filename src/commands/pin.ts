@@ -1,4 +1,9 @@
-import type { GuildMember, Message } from "discord.js";
+import {
+  ContextMenuCommandInteraction,
+  MessageContextMenuCommandInteraction,
+  type GuildMember,
+  type Message,
+} from "discord.js";
 import { registerCommand } from "../commandHandler.js";
 import env from "../env.js";
 import client from "../index.js";
@@ -24,33 +29,46 @@ registerCommand({
   },
 });
 
-export async function handlePin(messageToPin: Message, member: GuildMember) {
+export async function handlePin(
+  messageToPin: Message | MessageContextMenuCommandInteraction,
+  member: GuildMember,
+) {
+  const msg =
+    messageToPin instanceof ContextMenuCommandInteraction
+      ? messageToPin.targetMessage
+      : messageToPin;
+
   if (!member.roles.cache.has(env.BEKEND_ROLE_ID))
     return await messageToPin.reply(
       "ik ben niet jouw vriend, laat dat ook even duidelijk zijn",
     );
 
-  if (messageToPin.pinned)
+  if (msg.pinned)
     return await messageToPin.reply("dit bericht is al gepind aapje");
 
-  await messageToPin.pin();
+  await msg.pin();
   await messageToPin.reply(`bericht gepind door <@${member.id}>!`);
 }
 
 export async function handleUnpin(
-  messageToUnpin: Message,
+  messageToUnpin: Message | MessageContextMenuCommandInteraction,
   member: GuildMember,
 ) {
+  const msg =
+    messageToUnpin instanceof ContextMenuCommandInteraction
+      ? messageToUnpin.targetMessage
+      : messageToUnpin;
+
   if (!member.roles.cache.has(env.BEKEND_ROLE_ID))
     return await messageToUnpin.reply(
       "ik ben niet jouw vriend, laat dat ook even duidelijk zijn",
     );
 
-  if (!messageToUnpin.pinned)
+  if (!msg.pinned)
     return await messageToUnpin.reply("dit bericht is niet gepind aapje");
 
-  await messageToUnpin.unpin();
-  await messageToUnpin.reply("bericht unpinned!");
+  await msg.unpin();
+  await messageToUnpin.reply(`bericht geunpind door <@${member.id}>!`);
 }
 
 registerCommand({

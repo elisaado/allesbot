@@ -7,7 +7,6 @@ import {
   GatewayIntentBits,
   REST,
   Routes,
-  TextChannel,
 } from "discord.js";
 import {
   getHandlers,
@@ -86,15 +85,15 @@ process.on("SIGINT", exitGracefully);
 client.on("messageCreate", handleCommand);
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isMessageContextMenuCommand()) return;
-  const { commandName, targetMessage, member: apiMember } = interaction;
+  const { commandName, member: apiMember } = interaction;
   if (!apiMember) return;
   const member = await interaction.guild?.members.fetch(apiMember.user.id);
   if (!member) return;
 
   if (commandName === "Pin") {
-    handlePin(targetMessage, member);
+    handlePin(interaction, member);
   } else if (commandName === "Unpin") {
-    handleUnpin(targetMessage, member);
+    handleUnpin(interaction, member);
   }
 });
 
