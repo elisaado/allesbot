@@ -1,6 +1,14 @@
 import env from "./env.js";
 
-import { Client, GatewayIntentBits, TextChannel } from "discord.js";
+import {
+  ApplicationCommandType,
+  Client,
+  ContextMenuCommandBuilder,
+  GatewayIntentBits,
+  REST,
+  Routes,
+  TextChannel,
+} from "discord.js";
 import {
   getHandlers,
   getRegexHandlers,
@@ -11,6 +19,7 @@ import {
 import db from "./db.js";
 
 import * as _ from "./commands/activatedCommands.js";
+import { handlePin, handleUnpin } from "./commands/pin.js";
 
 const client = new Client({
   intents: [
@@ -23,7 +32,7 @@ const client = new Client({
   ],
 });
 
-client.on("ready", (client) => {
+client.on("ready", async (client) => {
   console.log(`Logged in as ${client.user.tag}`);
 
   registerCommand({
@@ -50,6 +59,20 @@ client.on("ready", (client) => {
       });
     },
   });
+
+  const data = [
+    new ContextMenuCommandBuilder()
+      .setName("Pin")
+      .setType(ApplicationCommandType.Message),
+    new ContextMenuCommandBuilder()
+      .setName("Unpin")
+      .setType(ApplicationCommandType.Message),
+  ];
+
+  const rest = new REST().setToken(env.DISCORD_TOKEN);
+  await rest.put(Routes.applicationCommands(client.user.id), {
+    body: data.map((cmd) => cmd.toJSON()),
+  });
 });
 
 function exitGracefully() {
@@ -61,6 +84,19 @@ process.on("SIGTERM", exitGracefully);
 process.on("SIGINT", exitGracefully);
 
 client.on("messageCreate", handleCommand);
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isMessageContextMenuCommand()) return;
+  const { commandName, targetMessage, member: apiMember } = interaction;
+  if (!apiMember) return;
+  const member = await interaction.guild?.members.fetch(apiMember.user.id);
+  if (!member) return;
+
+  if (commandName === "Pin") {
+    handlePin(targetMessage, member);
+  } else if (commandName === "Unpin") {
+    handleUnpin(targetMessage, member);
+  }
+});
 
 client.login(env.DISCORD_TOKEN);
 
