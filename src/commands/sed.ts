@@ -14,7 +14,7 @@ registerCommand({
       return;
     }
 
-    const match = message.content.match(/^\.s\/(.*?)\/(.*?)(\/(.*))?$/);
+    const match = message.content.match(/^\.s\/((?:\\.|[^\/])*)\/((?:\\.|[^\/])*)(\/(.*))?$/);
     if (!match) {
       return;
     }
