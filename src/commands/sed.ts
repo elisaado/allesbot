@@ -14,7 +14,7 @@ registerCommand({
       return;
     }
 
-    const match = message.content.match(/^\.s\/(.*?)\/(.*?)(\/(.*))?$/);
+    const match = message.content.match(/^`?\.s`?\/((?:\\.|[^\/])*)\/((?:\\.|[^\/])*)(\/(.*?))?`?$/);
     if (!match) {
       return;
     }
@@ -47,7 +47,7 @@ registerCommand({
     const oldContent = reply.content || reply.embeds?.[0]?.description || "";
     const newContent = oldContent.replace(
       new RegExp(find, options ?? "g"),
-      replace,
+      replace.replace(/\\(.)/g, "$1"),
     );
     if (newContent.length > 1000) {
       message.reply("Resulting message is te lang aapje");
