@@ -49,7 +49,7 @@ client.on("ready", async (client) => {
           let commandString =
             typeof command === "string" ? "." + command : command.toString();
 
-          return `**${name}** (\`${commandString}\`): ${description}`;
+          return `**${name}** (\`\`${commandString}\`\`): ${description}`;
         })
         .join("\n");
       message.reply({
