@@ -3,7 +3,7 @@ import client from "../index.js";
 
 registerCommand({
   name: "sed",
-  command: /^.s\/.*\/.*(\/.*)?$/,
+  command: /^`?\.s`?\/(\\.|[^\/])*\/(\\.|[^\/])*(\/.*?)?`?$/,
   description: "Use sed to replace text in the replied to message",
   handle: (message, _) => {
     if (
