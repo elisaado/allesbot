@@ -67,6 +67,10 @@ registerCommand({
     const track = json.tracks[0];
 
     if (json.search.nowPlaying && track) {
+      let thumbnail = (track as any).image[2]?.url
+        ? { thumbnail: { url: (track as any).image[2].url } }
+        : {};
+
       message.reply({
         embeds: [
           {
@@ -79,9 +83,7 @@ registerCommand({
             title: track.name,
             description: `**${track.artist?.name}** on *${track.album?.name}*`,
             url: track.url,
-            thumbnail: {
-              url: (track as any).image[2].url,
-            },
+            ...thumbnail,
           },
         ],
       });
