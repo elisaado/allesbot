@@ -2,7 +2,7 @@ import { registerCommand } from "../commandHandler.js";
 
 registerCommand({
   name: "Urban Dictionary",
-  command: /^\.(ud|urban) (\d )?(\w+)$/,
+  command: /^\.(ud|urban) (\d )?([\w ]+)$/,
   description: "Get the definition of a word from Urban Dictionary",
   handle(message, args) {
     const match = message.content.match(/^^\.(ud|urban) (\d )?(\w+)$/);
@@ -18,7 +18,7 @@ registerCommand({
     }
     const word = match[3];
 
-    fetch(`https://api.urbandictionary.com/v0/define?term=${word}`)
+    fetch(`https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(word)}`)
       .then((response) => response.json())
       .then((data) => {
         if (!(data instanceof Object)) {
