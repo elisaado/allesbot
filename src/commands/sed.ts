@@ -8,8 +8,7 @@ registerCommand({
   handle: (message, _) => {
     if (
       message.reference == null ||
-      message.reference.messageId == null ||
-      message.author.id === client.user?.id
+      message.reference.messageId == null
     ) {
       return;
     }
