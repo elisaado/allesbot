@@ -46,6 +46,7 @@ registerCommand({
 
       if (!fipo) {
         console.error("no fipo found in timeout");
+        todaysFipos = [];
         return;
       }
 

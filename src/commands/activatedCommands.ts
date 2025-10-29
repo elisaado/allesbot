@@ -6,3 +6,4 @@ import "./karma.js";
 import "./fipo.js";
 import "./urban.js";
 import "./pin.js";
+import "./vuileLink.js";
