@@ -1,6 +1,7 @@
 import { parseWebhookURL } from "discord.js";
 import { registerCommand } from "../commandHandler.js";
 import { URL } from "url";
+import client from "../index.js";
 
 let badKeys = [
   // thank you for the list, https://stackoverflow.com/questions/76372936/what-is-the-most-efficient-way-to-remove-tracking-marketing-etc-query-paramete
@@ -410,10 +411,14 @@ let badKeys = [
 registerCommand({
   name: "vuileLink",
   command:
-    /(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/i,
+    /(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/="'!]*)/,
   description: "maakt links schoon (geen commando)",
   showInHelp: false,
   handle: async (message, args) => {
+    if (message.author.id === client.user?.id) {
+      return;
+    }
+
     const urlInMessage = message.content.match(
       /(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/i,
     )?.[0];
@@ -426,15 +431,19 @@ registerCommand({
       return;
     }
 
-    let hasBadKey = false;
+    // we can't delete because the for loop internally keeps an index which will shift we we delete
+    let toDelete = [];
     for (let key of parsedUrl.searchParams.keys()) {
       if (badKeys.includes(key)) {
-        parsedUrl.searchParams.delete(key);
-        hasBadKey = true;
+        toDelete.push(key);
       }
     }
 
-    if (!hasBadKey) return;
+    if (toDelete.length === 0) return;
+
+    for (let badKey of toDelete) {
+      parsedUrl.searchParams.delete(badKey);
+    }
 
     let cleanURL = parsedUrl.toString();
     message.reply(
