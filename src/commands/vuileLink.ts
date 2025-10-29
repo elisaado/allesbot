@@ -2,8 +2,8 @@ import { parseWebhookURL } from "discord.js";
 import { registerCommand } from "../commandHandler.js";
 import { URL } from "url";
 
-// thank you for the list, https://stackoverflow.com/questions/76372936/what-is-the-most-efficient-way-to-remove-tracking-marketing-etc-query-paramete
 let badKeys = [
+  // thank you for the list, https://stackoverflow.com/questions/76372936/what-is-the-most-efficient-way-to-remove-tracking-marketing-etc-query-paramete
   "_ga",
   "_ga-ft",
   "_gl",
@@ -394,6 +394,17 @@ let badKeys = [
   "utm_sq",
   "utm_ter",
   "utm_term",
+
+  // aliexpress crap
+  "spm",
+  "aem_p4p_detail",
+  "algo_pvid",
+  "algo_exp_id",
+  "pdp_ext_f",
+  "pdp_npi",
+  "curPageLogUid",
+  "utparam-url",
+  "search_p4p_id",
 ];
 
 registerCommand({
