@@ -56,7 +56,7 @@ registerCommand({
 });
 
 function getKarma(subject: string): Promise<number> {
-  if (subject.match(/alles( )?bot/i) || subject.contains("<@1269730382765621288>")) {
+  if (subject.match(/alles( )?bot/i) || subject.includes("<@1269730382765621288>")) {
     return Promise.resolve(9999999);
   }
 
