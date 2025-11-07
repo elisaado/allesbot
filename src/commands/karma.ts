@@ -62,9 +62,6 @@ function getKarma(subject: string): Promise<number> {
   if (subject.match(/typst/i)) {
     return Promise.resolve(9999998);
   }
-  if (subject.match(/tex/i)) {
-    return Promise.resolve(-9999998);
-  }
 
   return new Promise<number>((resolve, reject) => {
     db.get(
