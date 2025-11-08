@@ -59,9 +59,6 @@ function getKarma(subject: string): Promise<number> {
   if (subject.match(/alles( )?bot/i) || subject.includes("<@1269730382765621288>")) {
     return Promise.resolve(9999999);
   }
-  if (subject.match(/typst/i)) {
-    return Promise.resolve(9999998);
-  }
 
   return new Promise<number>((resolve, reject) => {
     db.get(
