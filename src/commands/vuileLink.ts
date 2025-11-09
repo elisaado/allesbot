@@ -325,7 +325,6 @@ let badKeys = [
   "scrape",
   "script",
   "scrlybrkr",
-  "search",
   "sellid",
   "sersafe",
   "sfn_data",
