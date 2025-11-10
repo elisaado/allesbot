@@ -1,19 +1,16 @@
-import type { NonSlashCommand } from "$src/customTypes.ts";
-import type { Message } from "discord.js";
+import { registerCommand } from "../commandHandler.js";
 
-export const funny: NonSlashCommand = {
+registerCommand({
   name: "funny",
   command:
     /^(pr dan)|((alles is stuk)|(stomme bot)|(alles( )?bot is stom)|(ik haat alles( )?bot)|(waarom kan alles( )?bot (.*) niet))$/i,
   description: "grappig (geen commando)",
   showInHelp: false,
-  match: (message: Message) =>
-    Boolean(RegExp(funny.command).exec(message.content)),
-  execute: async (message: Message): Promise<void> => {
+  handle: async (message, args) => {
     if (
-      message.content === "pr dan"
-      && message.reference
-      && message.reference.messageId
+      message.content === "pr dan" &&
+      message.reference &&
+      message.reference.messageId
     ) {
       const referencedMessage = await message.channel.messages.fetch(
         message.reference.messageId,
@@ -22,4 +19,4 @@ export const funny: NonSlashCommand = {
     }
     message.reply("maak een pr dan :) <https://github.com/elisaado/allesbot>");
   },
-};
+});

@@ -1,26 +1,17 @@
-import env from "./env.js";
-
+import { env } from "$src/config.ts";
 import {
-  ApplicationCommandType,
+  type BotEvent,
+  BotEventGuard,
+} from "$src/customTypes.ts";
+import {
   Client,
-  ContextMenuCommandBuilder,
   GatewayIntentBits,
-  REST,
-  Routes,
 } from "discord.js";
-import {
-  getHandlers,
-  getRegexHandlers,
-  handleCommand,
-  registerCommand,
-} from "./commandHandler.js";
+import fs from "node:fs";
+import path from "node:path";
 
-import db from "./db.js";
-
-import * as _ from "./commands/activatedCommands.js";
-import { handlePin, handleUnpin } from "./commands/pin.js";
-
-const client = new Client({
+// Grab all the command folders from the commands directory you created earlier
+const client: Client<boolean> = new Client({
   intents: [
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers,
@@ -31,72 +22,33 @@ const client = new Client({
   ],
 });
 
-client.on("ready", async (client) => {
-  console.log(`Logged in as ${client.user.tag}`);
+const eventsPath: string = path.join(import.meta.dirname ?? "", "events");
+const eventFiles: string[] = fs
+  .readdirSync(eventsPath)
+  .filter((file: string) => file.endsWith(".ts"));
 
-  registerCommand({
-    name: "help",
-    command: "help",
-    description: "Lists all available commands",
-    handle: (message, _) => {
-      const handlers = getHandlers();
-      const regexHandlers = getRegexHandlers();
-      const commands = [Object.values(handlers), regexHandlers]
-        .flat()
-        .filter((handler) => handler.showInHelp !== false)
-        .map((handler) => {
-          const { name, description, command } = handler;
-          let commandString =
-            typeof command === "string" ? "." + command : command.toString();
+for (const file of eventFiles) {
+  const filePath: string = path.join(eventsPath, file);
+  const module: object = await import(`file:///${filePath}`);
 
-          return `**${name}** (\`\`${commandString}\`\`): ${description}`;
-        })
-        .join("\n");
-      message.reply({
-        allowedMentions: { repliedUser: false },
-        content: `${commands}\n\nUse .<command> to run a command`,
-      });
-    },
-  });
+  for (const entry of Object.entries(module)) {
+    if (BotEventGuard(entry[1])) {
+      const event: BotEvent = entry[1] as BotEvent;
 
-  const data = [
-    new ContextMenuCommandBuilder()
-      .setName("Pin")
-      .setType(ApplicationCommandType.Message),
-    new ContextMenuCommandBuilder()
-      .setName("Unpin")
-      .setType(ApplicationCommandType.Message),
-  ];
+      if (event.once) {
+        client.once(event.type as string, (...args) => event.execute(...args));
+        continue;
+      }
 
-  const rest = new REST().setToken(env.DISCORD_TOKEN);
-  await rest.put(Routes.applicationCommands(client.user.id), {
-    body: data.map((cmd) => cmd.toJSON()),
-  });
-});
+      client.on(event.type as string, (...args) => event.execute(...args));
+      continue;
+    }
 
-function exitGracefully() {
-  db.close();
-  process.exit();
+    console.error(
+      `[WARNING] The module at ${filePath} is doesn't really look like an event..`,
+    );
+  }
 }
 
-process.on("SIGTERM", exitGracefully);
-process.on("SIGINT", exitGracefully);
-
-client.on("messageCreate", handleCommand);
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isMessageContextMenuCommand()) return;
-  const { commandName, member: apiMember } = interaction;
-  if (!apiMember) return;
-  const member = await interaction.guild?.members.fetch(apiMember.user.id);
-  if (!member) return;
-
-  if (commandName === "Pin") {
-    handlePin(interaction, member);
-  } else if (commandName === "Unpin") {
-    handleUnpin(interaction, member);
-  }
-});
-
-client.login(env.DISCORD_TOKEN);
-
-export default client;
+// Dit runt
+client.login(env.TOKEN);

@@ -1,25 +1,17 @@
-import { registerCommand } from "../commandHandler.js";
+import type { NonSlashCommand } from "$src/customTypes.ts";
+import type { Message } from "discord.js";
 
-registerCommand({
+export const ping: NonSlashCommand = {
   name: "ping",
   command: "ping",
   description: "Replies with pong and the latency",
-  handle: (message, _) => {
-    const now = Date.now();
-    const diff = now - message.createdTimestamp;
+  showInHelp: true,
+  match: (message: Message) => message.content === ".ping",
+  execute: (message: Message): void => {
+    const diff: number = Date.now() - message.createdTimestamp;
+    console.log(
+      `\x1b[36m > \x1b[0m Pinged ${message.author.username}.`,
+    );
     message.reply(`Pong! Latency: ${diff}ms`);
   },
-});
-
-registerCommand({
-  name: "editPing",
-  command: "editPing",
-  description: "Measures the latency by editing the message",
-  handle: (message, _) => {
-    message.channel.send("Pinging...").then((sent) => {
-      const now = Date.now();
-      const diff = now - sent.createdTimestamp;
-      sent.edit(`Pong! Latency: ${diff}ms`);
-    });
-  },
-});
+};
