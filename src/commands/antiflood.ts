@@ -54,6 +54,6 @@ registerCommand({
       });
     }
 
-    buckets[message.author.id] = bucket;
+    buckets[message.author.id] = { ...bucket, lastTS: now };
   },
 });
