@@ -53,5 +53,7 @@ registerCommand({
         console.log("user timeouten ging fout, wrm?", e);
       });
     }
+
+    buckets[message.author.id] = bucket;
   },
 });
