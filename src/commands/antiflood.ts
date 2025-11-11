@@ -38,8 +38,10 @@ registerCommand({
       return;
     }
 
-    if (now - bucket.lastTS > period) {
-      bucket.count = 0;
+    let elapsed = now - bucket.lastTS;
+
+    if (elapsed > period) {
+      bucket.count -= Math.max(1, elapsed / 100);
     } else {
       bucket.count += 1;
     }
