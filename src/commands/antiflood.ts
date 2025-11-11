@@ -20,13 +20,11 @@ registerCommand({
   description: "niet spammen",
   showInHelp: false,
   handle: async (message, args) => {
-    console.log("hit");
     if (message.author.bot) {
       return;
     }
     const now = new Date().valueOf();
     let bucket = buckets[message.author.id];
-    console.log({ bucket });
 
     if (!bucket) {
       bucket = {
@@ -45,8 +43,6 @@ registerCommand({
     } else {
       bucket.count += 1;
     }
-
-    console.log({ bucket });
 
     if (bucket.count > max_per_period) {
       let guildmember;
