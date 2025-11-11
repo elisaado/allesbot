@@ -1,20 +1,8 @@
-import { env } from "$src/config.ts";
-import { type BotEvent, BotEventGuard } from "$src/customTypes.ts";
-import { Client, GatewayIntentBits } from "discord.js";
+import { env } from "./config.ts";
+import { type BotEvent, BotEventGuard } from "./customTypes.ts";
 import fs from "node:fs";
 import path from "node:path";
-
-// Grab all the command folders from the commands directory you created earlier
-const client: Client<boolean> = new Client({
-  intents: [
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildPresences,
-    GatewayIntentBits.DirectMessages,
-  ],
-});
+import { client } from "./client.ts";
 
 const eventsPath: string = path.join(import.meta.dirname ?? "", "events");
 const eventFiles: string[] = fs
@@ -46,5 +34,3 @@ for (const file of eventFiles) {
 
 // Dit runt
 client.login(env.DISCORD_TOKEN);
-
-export { client };

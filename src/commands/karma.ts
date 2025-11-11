@@ -28,7 +28,7 @@ export const getKarma: NonSlashCommand = {
   description: "Get karma of something",
   match: (message: Message) => message.content.split(" ")[0] === ".karma",
   execute: (message: Message): void => {
-    const subject = message.content.split(" ").slice(1).join();
+    const subject: string = message.content.split(" ").slice(1).join();
 
     message.reply(`${subject} has **${getKarmaFunc(subject)} karma**`);
   },
@@ -41,11 +41,10 @@ export const setKarma: NonSlashCommand = {
   match: (message: Message) =>
     message.content.endsWith("--") || message.content.endsWith("++"),
   execute: (message: Message): void => {
-    const subject = message.content.substring(0, message.content.length - 2)
+    const subject: string = message.content.substring(0, message.content.length - 2)
       .trim();
-    console.log(subject);
 
-    const curKarma = getKarmaFunc(subject);
+    const curKarma: number = getKarmaFunc(subject);
 
     setKarmaFunc(subject, curKarma + (message.content.endsWith("++") ? 1 : -1));
 

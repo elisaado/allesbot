@@ -14,10 +14,10 @@ registerCommand({
       return;
     }
 
-    const match = message.content.match(/^`?\.s`?\/`?((?:\\.|[^\/])*)\/((?:\\.|[^\/])*?)(\/(.*?))?`?$/);
-    if (!match) {
-      return;
-    }
+    const match = message.content.match(
+      /^`?\.s`?\/`?((?:\\.|[^\/])*)\/((?:\\.|[^\/])*?)(\/(.*?))?`?$/,
+    );
+    if (!match) return;
 
     const [, find, replace, , options] = match;
     if (find == null || replace == null) {

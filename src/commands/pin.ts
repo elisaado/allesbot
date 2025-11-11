@@ -1,4 +1,4 @@
-import type { Message } from "discord.js";
+import type { Message, OmitPartialGroupDMChannel } from "discord.js";
 import { env } from "../config.ts";
 import type { NonSlashCommand } from "../customTypes.ts";
 
@@ -31,7 +31,8 @@ export const pin: NonSlashCommand = {
       return;
     }
 
-    const referenced = await message.fetchReference();
+    const referenced: OmitPartialGroupDMChannel<Message<boolean>> =
+      await message.fetchReference();
 
     if (referenced.pinned) {
       message.reply(
@@ -74,7 +75,8 @@ export const unpin: NonSlashCommand = {
       return;
     }
 
-    const referenced = await message.fetchReference();
+    const referenced: OmitPartialGroupDMChannel<Message<boolean>> =
+      await message.fetchReference();
 
     if (!referenced.pinned) {
       message.reply(

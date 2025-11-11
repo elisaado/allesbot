@@ -9,9 +9,6 @@ export const ping: NonSlashCommand = {
   match: (message: Message) => message.content === ".ping",
   execute: (message: Message): void => {
     const diff: number = Date.now() - message.createdTimestamp;
-    console.log(
-      `\x1b[36m > \x1b[0m Pinged ${message.author.username}.`,
-    );
     message.reply(`Pong! Latency: ${diff}ms`);
   },
 };

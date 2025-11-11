@@ -15,7 +15,7 @@ export const funny: NonSlashCommand = {
       && message.reference
       && message.reference.messageId
     ) {
-      const referencedMessage = await message.channel.messages.fetch(
+      const referencedMessage: Message<boolean> = await message.channel.messages.fetch(
         message.reference.messageId,
       );
       message = referencedMessage;
