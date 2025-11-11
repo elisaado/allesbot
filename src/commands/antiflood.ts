@@ -39,10 +39,12 @@ registerCommand({
     let elapsed = now - bucket.lastTS;
 
     if (elapsed > period) {
-      bucket.count -= Math.max(1, elapsed / 100);
+      bucket.count -= Math.min(1, elapsed / 1000);
     } else {
       bucket.count += 1;
     }
+
+    console.log({ bucket });
 
     if (bucket.count > max_per_period) {
       let guildmember;
