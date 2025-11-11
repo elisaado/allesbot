@@ -4,7 +4,7 @@ import client from "../index.js";
 
 registerCommand({
   name: "karma",
-  command: "karma",
+  command: ".karma",
   description: "Get karma of something",
   handle: async (message, _) => {
     if (message.author.bot) return;

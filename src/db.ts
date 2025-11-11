@@ -2,7 +2,7 @@ import { Database } from "@db/sqlite";
 import { addSigListener } from "./sigHandler.ts";
 
 const basePath: URL = new URL("../", import.meta.url);
-export const db: Database = new Database(
+const db: Database = new Database(
   new URL("./daataabaasaa.db", basePath),
 );
 
@@ -40,4 +40,4 @@ db.exec(`
         date TEXT NOT NULL
   )`);
 
-export default db;
+export { db };

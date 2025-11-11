@@ -1,12 +1,6 @@
 import { env } from "$src/config.ts";
-import {
-  type BotEvent,
-  BotEventGuard,
-} from "$src/customTypes.ts";
-import {
-  Client,
-  GatewayIntentBits,
-} from "discord.js";
+import { type BotEvent, BotEventGuard } from "$src/customTypes.ts";
+import { Client, GatewayIntentBits } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -51,4 +45,6 @@ for (const file of eventFiles) {
 }
 
 // Dit runt
-client.login(env.TOKEN);
+client.login(env.DISCORD_TOKEN);
+
+export { client };
