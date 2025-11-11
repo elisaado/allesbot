@@ -26,6 +26,23 @@ export const BotEventGuard = (object: object) =>
 
 export type MaybePromiseVoid = void | Promise<void>;
 
+export type UrbanDictionaryEntry = {
+  author: string;
+  current_vote: string;
+  defid: number;
+  definition: string;
+  example: string;
+  permalink: string;
+  thumbs_down: number;
+  thumbs_up: number;
+  word: string;
+  written_on: string;
+};
+
+export type UrbanDictionaryResponse = {
+  list: UrbanDictionaryEntry[];
+};
+
 export type Track = {
   name: string;
   album: string;

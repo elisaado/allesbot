@@ -7,15 +7,14 @@ registerCommand({
   handle(message, args) {
     const match = message.content.match(/^^\.(ud|urban) (\d )?(\w+)$/);
 
-    if (!match) {
-      return;
-    }
+    if (!match) return;
 
     const i = +(match[2] ?? 0);
     if (i < 0 || i > 9 || isNaN(i)) {
       message.reply("Invalid index");
       return;
     }
+
     const word = match[3];
 
     fetch(`https://api.urbandictionary.com/v0/define?term=${word}`)
@@ -59,7 +58,8 @@ registerCommand({
               description: word.definition,
               url: word.permalink,
               footer: {
-                text: `By ${word.author}\n👍 ${word.thumbs_up} | 👎 ${word.thumbs_down}`,
+                text:
+                  `By ${word.author}\n👍 ${word.thumbs_up} | 👎 ${word.thumbs_down}`,
               },
               thumbnail: {
                 url: "https://cdn.elisaado.com/ud_logo.jpeg",
