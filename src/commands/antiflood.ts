@@ -1,11 +1,7 @@
 import { registerCommand } from "../commandHandler.js";
 
-// period in miliseconds
-const period = 10_000;
-// max messages a user is allowed to send
-const max_per_period = 9;
-// map of userID to an object with their last timestamp and their count of messages in a $period second timespan
-// when date() - lastTS > period, count is reset to 0, when count > max_per_period, user receives a timeout of 60 seconds
+// leaky bucket implementation
+const max_bucket_size = 10;
 const buckets: Record<
   string,
   {
@@ -38,15 +34,13 @@ registerCommand({
 
     let elapsed = now - bucket.lastTS;
 
-    if (elapsed > period) {
-      bucket.count = Math.max(1, bucket.count - elapsed / 1000);
-    } else {
-      bucket.count += 1;
-    }
+    // bucket leaks one every 2 seconds, but can never reach below 1
+    bucket.count = Math.max(1, bucket.count + 1 - Math.floor(elapsed / 2000));
 
     console.log({ bucket });
 
-    if (bucket.count > max_per_period) {
+    // time out user
+    if (bucket.count > max_bucket_size) {
       let guildmember;
       if (message.mentions.members?.first()) {
         guildmember = message.mentions.members.first();
