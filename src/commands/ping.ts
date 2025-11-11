@@ -1,5 +1,5 @@
-import type { NonSlashCommand } from "../customTypes.ts";
 import type { Message } from "discord.js";
+import type { NonSlashCommand } from "../customTypes.ts";
 
 export const ping: NonSlashCommand = {
   name: "ping",

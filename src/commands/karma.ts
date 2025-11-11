@@ -26,9 +26,9 @@ export const getKarma: NonSlashCommand = {
   name: "getKarma",
   command: ".karma ",
   description: "Get karma of something",
-  match: (message: Message) => message.content.startsWith(".karma "),
+  match: (message: Message) => message.content.split(" ")[0] === ".karma",
   execute: (message: Message): void => {
-    const subject = message.content.substring(7).trim();
+    const subject = message.content.split(" ").slice(1).join();
 
     message.reply(`${subject} has **${getKarmaFunc(subject)} karma**`);
   },

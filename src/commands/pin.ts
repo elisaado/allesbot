@@ -1,5 +1,5 @@
-import { env } from "../config.ts";
 import type { Message } from "discord.js";
+import { env } from "../config.ts";
 import type { NonSlashCommand } from "../customTypes.ts";
 
 export const pin: NonSlashCommand = {
