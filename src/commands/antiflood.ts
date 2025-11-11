@@ -39,7 +39,7 @@ registerCommand({
     let elapsed = now - bucket.lastTS;
 
     if (elapsed > period) {
-      bucket.count -= Math.min(1, elapsed / 1000);
+      bucket.count = Math.max(1, bucket.count - elapsed / 1000);
     } else {
       bucket.count += 1;
     }
