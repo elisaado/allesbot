@@ -1,11 +1,11 @@
 import {
-  type NonSlashCommand,
-  NonSlashCommandGuard,
+  type Command,
+  CommandGuard,
 } from "./customTypes.ts";
 import fs from "node:fs";
 import path from "node:path";
 
-const nonSlashCommands: NonSlashCommand[] = [];
+const nonSlashCommands: Command[] = [];
 
 // Grabs all files in commands/slashCommands
 const commandsPath: string = path.join(
@@ -21,8 +21,8 @@ for (const file of commandFiles) {
   const module: object = await import(`file:///${filePath}`);
 
   for (const entry of Object.entries(module)) {
-    if (NonSlashCommandGuard(entry[1])) {
-      nonSlashCommands.push(entry[1] as NonSlashCommand);
+    if (CommandGuard(entry[1])) {
+      nonSlashCommands.push(entry[1] as Command);
       continue;
     }
 

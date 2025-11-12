@@ -8,5 +8,6 @@ export const client: Client<boolean> = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildModeration,
   ],
 });

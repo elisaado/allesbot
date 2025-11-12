@@ -1,9 +1,9 @@
 import { EmbedBuilder, type Message } from "discord.js";
 import { env } from "../config.ts";
 import type {
+  Command,
   LastFMData,
   LastFMTrack,
-  NonSlashCommand,
   Track,
 } from "../customTypes.ts";
 import { db } from "../db.ts";
@@ -23,7 +23,7 @@ export function trackEmbedBuilder(
     .setDescription(`**${trackPlaying.artist}** on _${trackPlaying.album}_`);
 }
 
-export const np: NonSlashCommand = {
+export const np: Command = {
   name: "np",
   command: ".np",
   description: "Shows your or someone else's currently playing track",
@@ -101,7 +101,7 @@ export const np: NonSlashCommand = {
   },
 };
 
-export const setNPUser: NonSlashCommand = {
+export const setNPUser: Command = {
   name: "setnpuser",
   command: ".setnpuser",
   description: "Sets the Last.fm username",

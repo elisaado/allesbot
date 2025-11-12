@@ -1,8 +1,8 @@
 import type { Message } from "discord.js";
-import type { NonSlashCommand } from "../customTypes.ts";
 import { client } from "../client.ts";
+import type { Command } from "../customTypes.ts";
 
-export const sed: NonSlashCommand = {
+export const sed: Command = {
   name: "sed",
   command: /^`?\.s`?\/`?((?:\\.|[^\/])*)\/((?:\\.|[^\/])*?)(\/(.*?))?`?$/,
   description: "Use sed to replace text in the replied to message",

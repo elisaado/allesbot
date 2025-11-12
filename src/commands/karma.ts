@@ -1,4 +1,4 @@
-import type { NonSlashCommand } from "$src/customTypes.ts";
+import type { Command } from "../customTypes.ts";
 import type { Message } from "discord.js";
 import { db } from "../db.ts";
 
@@ -22,7 +22,7 @@ function setKarmaFunc(subject: string, newKarma: number): void {
   );
 }
 
-export const getKarma: NonSlashCommand = {
+export const getKarma: Command = {
   name: "getKarma",
   command: ".karma ",
   description: "Get karma of something",
@@ -34,7 +34,7 @@ export const getKarma: NonSlashCommand = {
   },
 };
 
-export const setKarma: NonSlashCommand = {
+export const setKarma: Command = {
   name: "setKarma",
   command: /^(.+)((\+\+)|(\-\-))$/,
   description: "Increase or decrease the karma of something",

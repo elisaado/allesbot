@@ -3,7 +3,7 @@ import { registerCommand } from "../commandHandler.js";
 import { URL } from "url";
 import client from "../index.js";
 
-let badKeys = [
+const badKeys = [
   // thank you for the list, https://stackoverflow.com/questions/76372936/what-is-the-most-efficient-way-to-remove-tracking-marketing-etc-query-paramete
   "_ga",
   "_ga-ft",
@@ -405,7 +405,7 @@ let badKeys = [
   "curPageLogUid",
   "utparam-url",
   "search_p4p_id",
-];
+] as const;
 
 registerCommand({
   name: "vuileLink",

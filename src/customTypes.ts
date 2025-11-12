@@ -1,6 +1,6 @@
 import type { Events, Message } from "discord.js";
 
-export type NonSlashCommand = {
+export type Command = {
   name: string;
   command: string | RegExp;
   description: string;
@@ -9,7 +9,7 @@ export type NonSlashCommand = {
   execute: (message: Message) => MaybePromiseVoid;
 };
 
-export const NonSlashCommandGuard = (object: object) =>
+export const CommandGuard = (object: object) =>
   "match" in object
   && "execute" in object;
 

@@ -1,11 +1,11 @@
 import { EmbedBuilder, type Message } from "discord.js";
 import type {
-  NonSlashCommand,
+  Command,
   UrbanDictionaryEntry,
   UrbanDictionaryResponse,
 } from "../customTypes.ts";
 
-export const ping: NonSlashCommand = {
+export const ping: Command = {
   name: "Urban Dictionary",
   command: /^\.(ud|urban) (\d )?(\w+)$/,
   description: "Get the definition of a word from Urban Dictionary",

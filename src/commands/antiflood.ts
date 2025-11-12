@@ -1,4 +1,6 @@
-import { registerCommand } from "../commandHandler.js";
+import type { Message } from "discord.js";
+import type { Command } from "../customTypes.ts";
+import { client } from "../client.ts";
 
 // period in miliseconds
 const period = 10_000;
@@ -6,22 +8,23 @@ const period = 10_000;
 const max_per_period = 10;
 // map of userID to an object with their last timestamp and their count of messages in a $period second timespan
 // when date() - lastTS > period, count is reset to 0, when count > max_per_period, user receives a timeout of 60 seconds
-const buckets: Record<
-  string,
-  {
-    lastTS: number;
-    count: number;
-  }
-> = {};
 
-registerCommand({
+type BucketContent = {
+  lastTS: number;
+  count: number;
+};
+
+const buckets: Record<string, BucketContent> = {};
+
+export const antiflood: Command = {
   name: "antiflood",
   command: /.+/,
   description: "niet spammen",
   showInHelp: false,
-  handle: async (message, args) => {
-    const now = new Date().valueOf();
-    let bucket = buckets[message.author.id];
+  match: (message: Message) => message.author.id === client.user?.id,
+  execute: async (message: Message): Promise<void> => {
+    const now: number = new Date().valueOf();
+    let bucket: BucketContent = buckets[message.author.id];
 
     if (!bucket) {
       bucket = {
@@ -33,11 +36,8 @@ registerCommand({
       return;
     }
 
-    if (now - bucket.lastTS > period) {
-      bucket.count = 0;
-    } else {
-      bucket.count += 1;
-    }
+    if (now - bucket.lastTS > period) bucket.count = 0;
+    else bucket.count += 1;
 
     if (bucket.count > max_per_period) {
       const guildmember = await message.guild?.members.fetch(message.author.id);
@@ -49,6 +49,7 @@ registerCommand({
         );
         return;
       }
+
       await guildmember.timeout(60 * 1000).catch((e) => {
         console.log("user timeouten ging fout, wrm?", e);
       });
@@ -56,4 +57,4 @@ registerCommand({
 
     buckets[message.author.id] = { ...bucket, lastTS: now };
   },
-});
+};

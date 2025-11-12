@@ -1,7 +1,7 @@
 import type { Message } from "discord.js";
-import type { NonSlashCommand } from "../customTypes.ts";
+import type { Command } from "../customTypes.ts";
 
-export const ping: NonSlashCommand = {
+export const ping: Command = {
   name: "ping",
   command: "ping",
   description: "Replies with pong and the latency",

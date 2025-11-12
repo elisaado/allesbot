@@ -1,8 +1,8 @@
 import type { Message, OmitPartialGroupDMChannel } from "discord.js";
 import { env } from "../config.ts";
-import type { NonSlashCommand } from "../customTypes.ts";
+import type { Command } from "../customTypes.ts";
 
-export const pin: NonSlashCommand = {
+export const pin: Command = {
   name: "pin",
   command: ".pin",
   description: "Pin een bericht",
@@ -46,7 +46,7 @@ export const pin: NonSlashCommand = {
   },
 };
 
-export const unpin: NonSlashCommand = {
+export const unpin: Command = {
   name: "unpin",
   command: ".unpin",
   description: "Unpin een bericht",
