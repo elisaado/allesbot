@@ -9,6 +9,7 @@ export const ping: Command = {
   name: "Urban Dictionary",
   command: /^\.(ud|urban) (\d )?(\w+)$/,
   description: "Get the definition of a word from Urban Dictionary",
+  showInHelp: true,
   match: (message: Message) =>
     message.content.split(" ")[0] === ".ud"
     || message.content.split(" ")[0] === ".urban",

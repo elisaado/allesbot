@@ -41,7 +41,10 @@ export const setKarma: Command = {
   match: (message: Message) =>
     message.content.endsWith("--") || message.content.endsWith("++"),
   execute: (message: Message): void => {
-    const subject: string = message.content.substring(0, message.content.length - 2)
+    const subject: string = message.content.substring(
+      0,
+      message.content.length - 2,
+    )
       .trim();
 
     const curKarma: number = getKarmaFunc(subject);

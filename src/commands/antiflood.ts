@@ -1,9 +1,9 @@
 import type { Message } from "discord.js";
-import type { Command } from "../customTypes.ts";
 import { client } from "../client.ts";
+import type { Command } from "../customTypes.ts";
 
 // period in miliseconds
-const period = 10_000;
+const period = 10000;
 // max messages a user is allowed to send
 const max_per_period = 10;
 // map of userID to an object with their last timestamp and their count of messages in a $period second timespan

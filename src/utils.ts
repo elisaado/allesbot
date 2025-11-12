@@ -1,3 +1,22 @@
+export function sortRecord(
+  input: Record<string, number>,
+): Record<string, number> {
+  return Object.fromEntries(
+    Object.entries(input).sort((a, b) => b[1] - a[1]),
+  );
+}
+
+export function biggestStringSize<T>(
+  things: Record<string, T>,
+): number {
+  let biggest: number = 0;
+  for (const thing of Object.entries(things)) {
+    if (thing[0].length > biggest) biggest = thing[0].length;
+  }
+
+  return biggest;
+}
+
 export const badKeys: string[] = [
   // thank you for the list, https://stackoverflow.com/questions/76372936/what-is-the-most-efficient-way-to-remove-tracking-marketing-etc-query-paramete
   "_ga",

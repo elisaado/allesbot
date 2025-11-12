@@ -115,13 +115,19 @@ export const setNPUser: Command = {
       return;
     }
 
-    db.prepare(
-      "DELETE FROM users WHERE discord_id = ?",
-    ).get(message.author.id);
+    try {
+      db.prepare(
+        "DELETE FROM users WHERE discord_id = ?",
+      ).get(message.author.id);
 
-    db.prepare(
-      "INSERT INTO users (discord_id, lastfm_username) VALUES (?, ?)",
-    ).get(message.author.id, lastFMUsername);
+      db.prepare(
+        "INSERT INTO users (discord_id, lastfm_username) VALUES (?, ?)",
+      ).get(message.author.id, lastFMUsername);
+    } catch (err) {
+      console.error(err);
+      message.reply("wtf er ging iets mis ofzo?");
+      return;
+    }
 
     message.reply(
       `Je nieuwe username is ${lastFMUsername}, geniet er maar van`,
