@@ -5,7 +5,7 @@ import type {
   UrbanDictionaryResponse,
 } from "../customTypes.ts";
 
-export const ping: Command = {
+export const urban: Command = {
   name: "Urban Dictionary",
   command: /^\.(ud|urban) (\d )?(\w+)$/,
   description: "Get the definition of a word from Urban Dictionary",

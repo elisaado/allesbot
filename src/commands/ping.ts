@@ -22,8 +22,7 @@ export const editPing: Command = {
   execute: (message: Message): void => {
     if (!(message.channel instanceof TextChannel)) return;
     message.channel.send("Pinging...").then((sent: Message<true>) => {
-      const now: number = Date.now();
-      const diff: number = now - sent.createdTimestamp;
+      const diff: number = Date.now() - sent.createdTimestamp;
       sent.edit(`Pong! Latency: ${diff}ms`);
     });
   },

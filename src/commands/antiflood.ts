@@ -3,9 +3,9 @@ import { client } from "../client.ts";
 import type { Command } from "../customTypes.ts";
 
 // period in miliseconds
-const period = 10000;
+const period = 10000 as const;
 // max messages a user is allowed to send
-const max_per_period = 10;
+const max_per_period = 10 as const;
 // map of userID to an object with their last timestamp and their count of messages in a $period second timespan
 // when date() - lastTS > period, count is reset to 0, when count > max_per_period, user receives a timeout of 60 seconds
 
@@ -50,8 +50,8 @@ export const antiflood: Command = {
         return;
       }
 
-      await guildmember.timeout(60 * 1000).catch((e) => {
-        console.log("user timeouten ging fout, wrm?", e);
+      await guildmember.timeout(60 * 1000).catch((err) => {
+        console.log("user timeouten ging fout, wrm?", err);
       });
     }
 
