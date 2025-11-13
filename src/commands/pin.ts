@@ -1,5 +1,5 @@
 import type { Message, OmitPartialGroupDMChannel } from "discord.js";
-import { env } from "../config.ts";
+import { env } from "../env.ts";
 import type { Command } from "../customTypes.ts";
 
 export const pin: Command = {

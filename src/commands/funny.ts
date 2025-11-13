@@ -7,8 +7,7 @@ export const funny: Command = {
     /^(pr dan)|((alles is stuk)|(stomme bot)|(alles( )?bot is stom)|(ik haat alles( )?bot)|(waarom kan alles( )?bot (.*) niet))$/i,
   description: "grappig (geen commando)",
   showInHelp: false,
-  match: (message: Message) =>
-    Boolean(RegExp(funny.command).exec(message.content)),
+  match: (message: Message) => Boolean(message.content.match(funny.command)),
   execute: async (message: Message): Promise<void> => {
     if (
       message.content === "pr dan"

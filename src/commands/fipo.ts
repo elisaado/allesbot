@@ -184,14 +184,14 @@ export const fipoReset: Command = {
 
     try {
       db.exec("DELETE FROM fipos");
+
+      todaysFipos = [];
+      recordedDate = "0";
+
+      message.reply("Fipo stats reset!");
     } catch (err) {
       console.error(err);
       return;
     }
-
-    todaysFipos = [];
-    recordedDate = "0";
-
-    message.reply("Fipo stats reset!");
   },
 };

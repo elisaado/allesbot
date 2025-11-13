@@ -40,21 +40,22 @@ export const sed: Command = {
       }
     }
 
-    const reply: Message<boolean> | undefined = message.channel.messages.cache
-      .get(
+    const replyMessage: Message<boolean> | undefined = message.channel.messages
+      .cache.get(
         message.reference.messageId,
       );
 
-    if (!reply) {
+    if (!replyMessage) {
       message.reply(
         "er ging iets mis tijdens het zoeken van de message waarop je reageerde, sorry",
       );
       return;
     }
 
-    if (reply.author.id === client.user?.id) return;
+    if (replyMessage.author.id === client.user?.id) return;
 
-    const oldContent: string = reply.content || reply.embeds?.[0]?.description
+    const oldContent: string = replyMessage.content
+      || replyMessage.embeds?.[0]?.description
       || "";
     const newContent: string = oldContent.replace(
       new RegExp(find, options ?? "g"),
@@ -64,7 +65,8 @@ export const sed: Command = {
       message.reply("Resulting message is te lang aapje");
       return;
     }
-    reply.reply({
+
+    replyMessage.reply({
       allowedMentions: { repliedUser: false },
       content: `Did you mean:\n${newContent}`,
     });

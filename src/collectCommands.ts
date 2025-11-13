@@ -1,9 +1,9 @@
+import fs from "node:fs";
+import path from "node:path";
 import {
   type Command,
   CommandGuard,
 } from "./customTypes.ts";
-import fs from "node:fs";
-import path from "node:path";
 
 const nonSlashCommands: Command[] = [];
 

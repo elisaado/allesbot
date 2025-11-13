@@ -4,7 +4,7 @@ export type Command = {
   name: string;
   command: string | RegExp;
   description: string;
-  showInHelp?: boolean;
+  showInHelp: boolean | undefined;
   match: (message: Message) => boolean;
   execute: (message: Message) => MaybePromiseVoid;
 };
@@ -15,7 +15,7 @@ export const CommandGuard = (object: object) =>
 
 export type BotEvent = {
   type: Events;
-  once?: boolean;
+  once: boolean | undefined;
   // deno-lint-ignore no-explicit-any
   execute: (...args: any[]) => void;
   // These types and parameters differ wildly, I also don't want to use any but I have no choice
@@ -25,6 +25,11 @@ export const BotEventGuard = (object: object) =>
   "type" in object && "execute" in object;
 
 export type MaybePromiseVoid = void | Promise<void>;
+
+export type BucketContent = {
+  lastTS: number;
+  count: number;
+};
 
 export type UrbanDictionaryEntry = {
   author: string;

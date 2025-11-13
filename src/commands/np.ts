@@ -1,5 +1,4 @@
 import { EmbedBuilder, type Message } from "discord.js";
-import { env } from "../config.ts";
 import type {
   Command,
   LastFMData,
@@ -7,6 +6,7 @@ import type {
   Track,
 } from "../customTypes.ts";
 import { db } from "../db.ts";
+import { env } from "../env.ts";
 
 export function trackEmbedBuilder(
   trackPlaying: Track,
