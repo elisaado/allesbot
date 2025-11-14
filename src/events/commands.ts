@@ -1,5 +1,5 @@
 import { Events, type Message, TextChannel } from "discord.js";
-import { nonSlashCommands } from "../collectCommands.ts";
+import { commands } from "../collectCommands.ts";
 import type { BotEvent } from "../customTypes.ts";
 
 export const nonSlashCommandEvent: BotEvent = {
@@ -7,9 +7,9 @@ export const nonSlashCommandEvent: BotEvent = {
   execute: (message: Message): void => {
     if (!(message.channel instanceof TextChannel)) return;
 
-    for (const nonSlashCommand of nonSlashCommands) {
-      if (nonSlashCommand.match(message)) {
-        nonSlashCommand.execute(message);
+    for (const command of commands) {
+      if (command.match(message)) {
+        command.execute(message);
       }
     }
   },

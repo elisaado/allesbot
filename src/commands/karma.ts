@@ -1,18 +1,33 @@
-import type { Command } from "../customTypes.ts";
 import type { Message } from "discord.js";
+import type { Command } from "../customTypes.ts";
 import { db } from "../db.ts";
 
-function getKarmaFunc(subject: string): number {
-  if (
-    subject.match(/alles( )?bot/i) || subject.includes("<@1269730382765621288>")
-  ) return 9999999;
-  if (subject.includes("typst")) return 9999998;
-  if (subject.includes("SEKS :bangbang:")) return 9999997;
+const specialKarmaValues: [string | RegExp, number][] = [
+  [/alles( )?bot/, 9999999],
+  ["<@1269730382765621288>", 9999999],
+  ["typst", 9999998],
+  ["SEKS :bangbang:", 9999997],
+];
 
-  const thing: { karma: number } | undefined = db.prepare(
+function getKarmaFunc(subject: string): number {
+  subject = subject.toLowerCase();
+  for (const specialKarmaValue of specialKarmaValues) {
+    if (
+      (
+        typeof specialKarmaValue[0] === "function" // typeof RegExp => "function"
+        && subject.match(specialKarmaValue[0])
+      )
+      || (
+        typeof specialKarmaValue[0] === "string"
+        && subject === specialKarmaValue[0]
+      )
+    ) return specialKarmaValue[1];
+  }
+
+  const thing: { karma: number } = db.prepare(
     "SELECT karma FROM karma WHERE subject= ?",
-  ).get(subject);
-  return thing?.karma ?? 0;
+  ).get(subject) ?? { karma: 0 };
+  return thing.karma;
 }
 
 function setKarmaFunc(subject: string, newKarma: number): void {
@@ -26,6 +41,7 @@ export const getKarma: Command = {
   name: "getKarma",
   command: ".karma ",
   description: "Get karma of something",
+  showInHelp: true,
   match: (message: Message) => message.content.split(" ")[0] === ".karma",
   execute: (message: Message): void => {
     const subject: string = message.content.split(" ").slice(1).join();
@@ -38,6 +54,7 @@ export const setKarma: Command = {
   name: "setKarma",
   command: /^(.+)((\+\+)|(\-\-))$/,
   description: "Increase or decrease the karma of something",
+  showInHelp: true,
   match: (message: Message) =>
     message.content.endsWith("--") || message.content.endsWith("++"),
   execute: (message: Message): void => {

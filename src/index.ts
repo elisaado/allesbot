@@ -33,5 +33,5 @@ for (const file of eventFiles) {
   }
 }
 
-// Dit runt
+// Finally, login to discord
 client.login(env.DISCORD_TOKEN);

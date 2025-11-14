@@ -1,11 +1,9 @@
+import type { Message } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
-import {
-  type Command,
-  CommandGuard,
-} from "./customTypes.ts";
+import { type Command, CommandGuard } from "./customTypes.ts";
 
-const nonSlashCommands: Command[] = [];
+const commands: Command[] = [];
 
 // Grabs all files in commands/slashCommands
 const commandsPath: string = path.join(
@@ -22,7 +20,7 @@ for (const file of commandFiles) {
 
   for (const entry of Object.entries(module)) {
     if (CommandGuard(entry[1])) {
-      nonSlashCommands.push(entry[1] as Command);
+      commands.push(entry[1] as Command);
       continue;
     }
 
@@ -32,9 +30,27 @@ for (const file of commandFiles) {
   }
 }
 
+commands.push({
+  name: "help",
+  command: ".help",
+  description: "Lists all available commands",
+  showInHelp: true,
+  match: (message: Message) => message.content === ".help",
+  execute: (message: Message): void => {
+    let returnMessage: string = "";
+    for (const command of commands) {
+      if (command.showInHelp) {
+        returnMessage +=
+          `**${command.name}** (\`\`${command.command.toString()}\`\`): ${command.description}\n`;
+      }
+    }
+    message.reply(returnMessage);
+  },
+});
+
 console.log(
-  "\x1b[34m\nNonSlashCommands: \x1b[0m\n",
-  nonSlashCommands,
+  "\x1b[34m\ncommands: \x1b[0m\n",
+  commands,
 );
 
-export { nonSlashCommands };
+export { commands };

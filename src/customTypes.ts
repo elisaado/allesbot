@@ -4,7 +4,7 @@ export type Command = {
   name: string;
   command: string | RegExp;
   description: string;
-  showInHelp: boolean | undefined;
+  showInHelp: boolean;
   match: (message: Message) => boolean;
   execute: (message: Message) => MaybePromiseVoid;
 };
@@ -15,7 +15,7 @@ export const CommandGuard = (object: object) =>
 
 export type BotEvent = {
   type: Events;
-  once: boolean | undefined;
+  once?: boolean;
   // deno-lint-ignore no-explicit-any
   execute: (...args: any[]) => void;
   // These types and parameters differ wildly, I also don't want to use any but I have no choice

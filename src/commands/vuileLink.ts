@@ -1,7 +1,8 @@
 import type { Message } from "discord.js";
 import { client } from "../client.ts";
 import type { Command } from "../customTypes.ts";
-import { badKeys } from "../utils.ts";
+// thank you for the list, https://stackoverflow.com/questions/76372936/what-is-the-most-efficient-way-to-remove-tracking-marketing-etc-query-parameter
+import badKeys from "$static/badKeys.json" with { type: "json" };
 
 export const ping: Command = {
   name: "vuileLink",

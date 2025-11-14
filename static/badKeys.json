@@ -1,10 +1,4 @@
-import { parseWebhookURL } from "discord.js";
-import { registerCommand } from "../commandHandler.js";
-import { URL } from "url";
-import client from "../index.js";
-
-const badKeys = [
-  // thank you for the list, https://stackoverflow.com/questions/76372936/what-is-the-most-efficient-way-to-remove-tracking-marketing-etc-query-paramete
+[
   "_ga",
   "_ga-ft",
   "_gl",
@@ -395,7 +389,6 @@ const badKeys = [
   "utm_ter",
   "utm_term",
 
-  // aliexpress crap
   "spm",
   "aem_p4p_detail",
   "algo_pvid",
@@ -404,49 +397,5 @@ const badKeys = [
   "pdp_npi",
   "curPageLogUid",
   "utparam-url",
-  "search_p4p_id",
-] as const;
-
-registerCommand({
-  name: "vuileLink",
-  command:
-    /(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/="'!]*)/,
-  description: "maakt links schoon (geen commando)",
-  showInHelp: false,
-  handle: async (message, args) => {
-    if (message.author.id === client.user?.id) {
-      return;
-    }
-
-    const urlInMessage = message.content.match(
-      /(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/i,
-    )?.[0];
-    if (!urlInMessage) {
-      return;
-    }
-
-    const parsedUrl = URL.parse(urlInMessage);
-    if (!parsedUrl) {
-      return;
-    }
-
-    // we can't delete because the for loop internally keeps an index which will shift we we delete
-    let toDelete = [];
-    for (let key of parsedUrl.searchParams.keys()) {
-      if (badKeys.includes(key)) {
-        toDelete.push(key);
-      }
-    }
-
-    if (toDelete.length === 0) return;
-
-    for (let badKey of toDelete) {
-      parsedUrl.searchParams.delete(badKey);
-    }
-
-    let cleanURL = parsedUrl.toString();
-    message.reply(
-      `jij bent VIES en je stomme linkje ook! Hier is een schone versie: ${cleanURL}`,
-    );
-  },
-});
+  "search_p4p_id"
+]

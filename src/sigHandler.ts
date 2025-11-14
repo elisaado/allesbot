@@ -11,8 +11,8 @@ export const removeSigListener = (fun: () => MaybePromiseVoid): void => {
 
 const sigHandler = async () => {
   console.log("Shutting down...");
-  for (const i of handlers) {
-    await i();
+  for (const handler of handlers) {
+    await handler();
   }
 
   Deno.exit();

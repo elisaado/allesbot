@@ -119,6 +119,7 @@ export const fipoStats: Command = {
   name: "fipostats",
   command: ".fipostats",
   description: "Check the fipo stats",
+  showInHelp: true,
   match: (message: Message) => message.content === ".fipostats",
   execute: async (message: Message): Promise<void> => {
     if (!message.guild) return;
