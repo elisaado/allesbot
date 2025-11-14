@@ -1,27 +1,22 @@
-import { registerCommand } from "../commandHandler.js";
+import type { Message } from "discord.js";
+import { client } from "../client.ts";
+import type { BucketContent, Command } from "../customTypes.ts";
 
-// period in miliseconds
-const period = 10_000;
-// max messages a user is allowed to send
-const max_per_period = 10;
-// map of userID to an object with their last timestamp and their count of messages in a $period second timespan
-// when date() - lastTS > period, count is reset to 0, when count > max_per_period, user receives a timeout of 60 seconds
-const buckets: Record<
-  string,
-  {
-    lastTS: number;
-    count: number;
-  }
-> = {};
+// leaky bucket implementation
+const max_bucket_size: number = 10 as const;
+const buckets: Record<string, BucketContent> = {};
 
-registerCommand({
+export const antiflood: Command = {
   name: "antiflood",
   command: /.+/,
   description: "niet spammen",
   showInHelp: false,
-  handle: async (message, args) => {
-    const now = new Date().valueOf();
-    let bucket = buckets[message.author.id];
+  match: (message: Message) =>
+    // !A && !B = !(A || B)
+    !(message.author.id === client.user?.id || message.author.bot),
+  execute: (message: Message): void => {
+    const now: number = new Date().valueOf();
+    let bucket: BucketContent = buckets[message.author.id];
 
     if (!bucket) {
       bucket = {
@@ -33,14 +28,19 @@ registerCommand({
       return;
     }
 
-    if (now - bucket.lastTS > period) {
-      bucket.count = 0;
-    } else {
-      bucket.count += 1;
-    }
+    const elapsed: number = now - bucket.lastTS;
 
-    if (bucket.count > max_per_period) {
-      let guildmember = await message.guild?.members.fetch(message.author.id);
+    // bucket leaks one every 2 seconds, but can never reach below 1
+    bucket.count = Math.max(1, bucket.count + 1 - Math.floor(elapsed / 2000));
+
+    console.log({ bucket });
+
+    // time out user
+    if (bucket.count > max_bucket_size) {
+      const guildmember = message.mentions.members?.first()
+        ? message.mentions.members.first()
+        : message.guild?.members.cache.get(message.author.id);
+
       if (!guildmember) {
         console.log(
           "user is not a guild member somehow?!",
@@ -49,11 +49,13 @@ registerCommand({
         );
         return;
       }
-      await guildmember.timeout(60 * 1000).catch((e) => {
-        console.log("user timeouten ging fout, wrm?", e);
-      });
+      guildmember
+        .timeout(60 * 1000, "rustig aan aap mannetje")
+        .catch((e) => {
+          console.log("user timeouten ging fout, wrm?", e, { guildmember });
+        });
     }
 
     buckets[message.author.id] = { ...bucket, lastTS: now };
   },
-});
+};

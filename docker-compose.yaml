@@ -1,8 +1,0 @@
-services:
-  allesbot:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ./db:/app/db
-    env_file: .env

@@ -1,9 +1,19 @@
-import sqlite3 from "sqlite3";
+import { Database } from "@db/sqlite";
+import { addSigListener } from "./sigHandler.ts";
 
-const db = new sqlite3.Database("db/db.sqlite3");
+const basePath: URL = new URL("../", import.meta.url);
+const db: Database = new Database(
+  new URL("./daataabaasaa.db", basePath),
+);
 
-db.serialize(() => {
-  db.run(`
+const closeListener = (): void => {
+  console.log("Closing DB");
+  db.close();
+};
+
+addSigListener(closeListener);
+
+db.exec(`
         CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         discord_id TEXT NOT NULL UNIQUE,
@@ -11,24 +21,23 @@ db.serialize(() => {
         )
     `);
 
-  db.run(`
+db.exec(`
         CREATE TABLE IF NOT EXISTS karma (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         subject TEXT NOT NULL UNIQUE,
         karma INTEGER NOT NULL
   )`);
 
-  // delete old fipo table
-  db.run(`
+// delete old fipo table
+db.exec(`
         DROP TABLE IF EXISTS fipo
     `);
 
-  db.run(`
+db.exec(`
         CREATE TABLE IF NOT EXISTS fipos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         discord_id TEXT NOT NULL,
         date TEXT NOT NULL
   )`);
-});
 
-export default db;
+export { db };

@@ -1,17 +1,40 @@
-import type { Message } from "discord.js";
-import { registerCommand } from "../commandHandler.js";
-import db from "../db.js";
+import {
+  type Collection,
+  type GuildMember,
+  type Message,
+  TextChannel,
+} from "discord.js";
+import type { Command } from "../customTypes.ts";
+import { db } from "../db.ts";
+import { biggestStringSize, sortRecord } from "../utils.ts";
 
 let todaysFipos: Message<boolean>[] = [];
-let recordedDate = "0-0-000";
+let recordedDate: string = "0-0-000";
 
-registerCommand({
+function getAsStringDateWithCorrectTimezoneForReal(date: Date): string {
+  return date.toLocaleString("nl-NL", {
+    timeZone: "Europe/Amsterdam",
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+  });
+}
+
+function getDayOfDateWithCorrectTimezoneForReal(date: Date): string {
+  return date.toLocaleDateString("nl-NL", {
+    day: "numeric",
+    timeZone: "Europe/Amsterdam",
+  });
+}
+
+export const fipo: Command = {
   name: "fipo",
-  command: "fipo",
+  command: ".fipo",
   description: "do the fipo!",
-  handle: (message, _) => {
+  showInHelp: true,
+  match: (message: Message) => message.content === ".fipo",
+  execute: (message: Message): void => {
     if (message.author.bot) return;
-
     // check if we need to reset the fipo
     if (
       recordedDate !== getAsStringDateWithCorrectTimezoneForReal(new Date())
@@ -30,17 +53,17 @@ registerCommand({
       return;
     }
 
-    // wait 1 seconds to allow more fipos to come in, then grab the earliest one
-    setTimeout(async () => {
-      const fipo = todaysFipos
-        .filter((a) => {
+    // wait 1 second to allow more fipos to come in, then grab the earliest one
+    setTimeout(() => {
+      const fipo: Message<boolean> = todaysFipos
+        .filter((a: Message<boolean>) => {
           return (
             getDayOfDateWithCorrectTimezoneForReal(
               new Date(a.createdTimestamp),
             ) === getDayOfDateWithCorrectTimezoneForReal(new Date())
           );
         })
-        .sort((a, b) => {
+        .sort((a: Message<boolean>, b: Message<boolean>) => {
           return a.createdTimestamp - b.createdTimestamp;
         })[0];
 
@@ -56,137 +79,120 @@ registerCommand({
 
       // the array is still needed though, to not start a lot of timeouts
 
-      let alreadyDone = await (() => {
-        return new Promise((resolve) => {
-          db.get(
-            "SELECT * FROM fipos WHERE date = ?",
-            [
-              getAsStringDateWithCorrectTimezoneForReal(
-                new Date(fipo.createdTimestamp),
-              ),
-            ],
-            (err, row) => {
-              if (err) {
-                console.error(err);
-                return;
-              }
-
-              resolve(row != null);
-            },
-          );
-        });
-      })();
+      const alreadyDone: object | undefined = db.prepare(
+        "SELECT * FROM fipos WHERE date = ?",
+      ).get(
+        getAsStringDateWithCorrectTimezoneForReal(
+          new Date(fipo.createdTimestamp),
+        ),
+      );
 
       if (alreadyDone) {
         console.log({ fipoAlreadyDone: alreadyDone });
         return;
       }
 
+      if (
+        !(message.channel instanceof TextChannel)
+        || message.channel.id !== "789249810032361508"
+      ) {
+        message.reply(
+          "je kan alleen fipo doen in <#789249810032361508> makker",
+        );
+        return;
+      }
+
       message.channel.send("W00t " + fipo.author.toString() + "!");
 
-      db.run("INSERT INTO fipos (discord_id, date) VALUES (?, ?)", [
-        fipo.author.id,
-        getAsStringDateWithCorrectTimezoneForReal(
-          new Date(fipo.createdTimestamp),
-        ),
-      ]);
+      db.prepare("INSERT INTO fipos (discord_id, date) VALUES (?, ?)")
+        .get(
+          fipo.author.id,
+          getAsStringDateWithCorrectTimezoneForReal(
+            new Date(fipo.createdTimestamp),
+          ),
+        );
     }, 1000);
   },
-});
+};
 
-registerCommand({
-  name: "Fipo Statistics",
-  command: "fipostats",
+export const fipoStats: Command = {
+  name: "fipostats",
+  command: ".fipostats",
   description: "Check the fipo stats",
+  showInHelp: true,
+  match: (message: Message) => message.content === ".fipostats",
+  execute: async (message: Message): Promise<void> => {
+    if (!message.guild) return;
 
-  handle: async (message, _) => {
-    // sorry dit is echt superbrak :D
-    db.all("SELECT * FROM fipos", (err, rows) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
+    // for some reason unbeknownst to me, this is an array
+    const rawFipoEntries: Record<string, number | string>[] = db.prepare(
+      "SELECT * FROM fipos",
+    ).all();
 
-      if (typeof rows === "undefined" || rows === null) {
-        return;
-      }
+    const fipoEntries: { discord_id: string; date: string }[] = [];
 
-      if (!Array.isArray(rows)) {
-        return;
-      }
-
-      const fipos = (rows as { discord_id: string; date: string }[]).reduce(
-        (acc, row) => {
-          const user = (acc[row.discord_id] ?? 0) + 1;
-          acc[row.discord_id] = user;
-
-          return acc;
-        },
-        {} as { [key: string]: number },
-      );
-
-      const fiposArray = Object.entries(fipos).map(([discord_id, fipos]) => {
-        const name =
-          message.guild?.members.cache.get(discord_id)?.displayName ??
-          "Unknown";
-        return { name, fipos };
+    for (const rawFipoEntry of rawFipoEntries) {
+      fipoEntries.push({
+        discord_id: String(rawFipoEntry.discord_id),
+        date: String(rawFipoEntry.date),
       });
+    }
 
-      fiposArray.sort((a, b) => b.fipos - a.fipos);
+    const userLookUp: Record<string, string> = {};
+    const guildMembers: Collection<string, GuildMember> = await message.guild
+      .members
+      .fetch();
+    for (const guildMember of guildMembers) {
+      userLookUp[guildMember[1].id] = guildMember[1].displayName;
+    }
 
-      const longestName = fiposArray.reduce((acc, row) => {
-        return Math.max(acc, row.name.length);
-      }, 0);
+    // string is username, number is amount of fipuntjes
+    let fipoStats: Record<string, number> = {};
 
-      message.reply({
-        allowedMentions: { repliedUser: false, users: [], parse: [] },
-        content: `# Fipo stats:\n\`\`\`\n${fiposArray
-          .map((r) => {
-            return `${r.name.padEnd(longestName + 2)}: ${r.fipos}`;
-          })
-          .join("\n")}\n\`\`\``,
-      });
-    });
+    for (const fipoEntry of fipoEntries) {
+      const currentMember: string = userLookUp[fipoEntry.discord_id];
+      if (typeof fipoStats[currentMember] !== "number") {
+        fipoStats[currentMember] = 0;
+      }
+
+      fipoStats[currentMember]++;
+    }
+    fipoStats = sortRecord(fipoStats);
+
+    const longestUsername: number = biggestStringSize(fipoStats);
+
+    let returnMessage: string = "# fipostats\n```\n";
+    for (const fipoStat of Object.entries(fipoStats)) {
+      returnMessage += fipoStat[0]
+        + " ".repeat(longestUsername + 4 - fipoStat[0].length) + ": "
+        + fipoStat[1] + "\n";
+    }
+    message.reply(returnMessage + "```");
   },
-});
+};
 
-registerCommand({
+export const fipoReset: Command = {
   name: "Fipo Reset",
-  command: "fiporeset",
+  command: ".fiporeset",
   description: "Reset the fipo stats",
   showInHelp: false,
-
-  handle: async (message, _) => {
+  match: (message: Message) => message.content === ".fiporeset",
+  execute: (message: Message) => {
     if (message.author.id !== "783447871596920892") {
       message.reply("You are not allowed to do that!");
       return;
     }
-    db.run("DELETE FROM fipos", (err) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
+
+    try {
+      db.exec("DELETE FROM fipos");
 
       todaysFipos = [];
       recordedDate = "0";
 
       message.reply("Fipo stats reset!");
-    });
+    } catch (err) {
+      console.error(err);
+      return;
+    }
   },
-});
-
-function getAsStringDateWithCorrectTimezoneForReal(date: Date) {
-  return date.toLocaleString("nl-NL", {
-    timeZone: "Europe/Amsterdam",
-    day: "numeric",
-    month: "numeric",
-    year: "numeric",
-  });
-}
-
-function getDayOfDateWithCorrectTimezoneForReal(date: Date) {
-  return date.toLocaleDateString("nl-NL", {
-    day: "numeric",
-    timeZone: "Europe/Amsterdam",
-  });
-}
+};

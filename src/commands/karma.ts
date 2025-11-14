@@ -1,113 +1,73 @@
-import { registerCommand } from "../commandHandler.js";
-import db from "../db.js";
-import client from "../index.js";
+import type { Message } from "discord.js";
+import type { Command } from "../customTypes.ts";
+import { db } from "../db.ts";
 
-registerCommand({
-  name: "karma",
-  command: "karma",
+const specialKarmaValues: [string | RegExp, number][] = [
+  [/alles( )?bot/, 9999999],
+  ["<@1269730382765621288>", 9999999],
+  ["typst", 9999998],
+  ["SEKS :bangbang:", 9999997],
+];
+
+function getKarmaFunc(subject: string): number {
+  subject = subject.toLowerCase();
+  for (const specialKarmaValue of specialKarmaValues) {
+    if (
+      (
+        typeof specialKarmaValue[0] === "function" // typeof RegExp => "function"
+        && subject.match(specialKarmaValue[0])
+      )
+      || (
+        typeof specialKarmaValue[0] === "string"
+        && subject === specialKarmaValue[0]
+      )
+    ) return specialKarmaValue[1];
+  }
+
+  const thing: { karma: number } = db.prepare(
+    "SELECT karma FROM karma WHERE subject= ?",
+  ).get(subject) ?? { karma: 0 };
+  return thing.karma;
+}
+
+function setKarmaFunc(subject: string, newKarma: number): void {
+  db.prepare("INSERT OR REPLACE INTO karma (subject, karma) VALUES (?, ?)").get(
+    subject,
+    String(newKarma),
+  );
+}
+
+export const getKarma: Command = {
+  name: "getKarma",
+  command: ".karma",
   description: "Get karma of something",
-  handle: async (message, _) => {
-    if (message.author.bot) return;
-    const subject = message.content.split(" ").slice(1).join(" ").toLowerCase();
-    if (!subject) return;
+  showInHelp: true,
+  match: (message: Message) => message.content.split(" ")[0] === ".karma",
+  execute: (message: Message): void => {
+    const subject: string = message.content.split(" ").slice(1).join();
 
-    const karma = await getKarma(subject);
-
-    message.reply({
-      allowedMentions: { repliedUser: false, users: [], parse: [] },
-      content: `${subject} has **${karma} karma**`,
-    });
+    message.reply(`${subject} has **${getKarmaFunc(subject)} karma**`);
   },
-});
+};
 
-registerCommand({
-  name: "set karma",
+export const setKarma: Command = {
+  name: "setKarma",
   command: /^(.+)((\+\+)|(\-\-))$/,
-  description: "Increase or decrease karma of something",
-  handle: (message, _) => {
-    if (message.author.bot) return;
-    const match = message.content.match(/^(.+)((\+\+)|(\-\-))$/);
-    if (!match) return;
+  description: "Increase or decrease the karma of something",
+  showInHelp: true,
+  match: (message: Message) =>
+    message.content.endsWith("--") || message.content.endsWith("++"),
+  execute: (message: Message): void => {
+    const subject: string = message.content.substring(
+      0,
+      message.content.length - 2,
+    )
+      .trim();
 
-    const subject = match[1]?.trim();
-    if (!subject) return;
-    const increase = match[2] === "++";
-    if (subject === "karma") {
-      message.reply({
-        allowedMentions: { repliedUser: false, users: [], parse: [] },
-        content: "Ga weg",
-      });
-      return;
-    }
+    const curKarma: number = getKarmaFunc(subject);
 
-    // copy to new variable to keep original for readability in reply
-    const lowerSubject = subject.toLowerCase();
+    setKarmaFunc(subject, curKarma + (message.content.endsWith("++") ? 1 : -1));
 
-    // TODO: (ooit) dit efficienter (en concurrency safe) maken door het in 1 query (transaction) te doen
-    getKarma(lowerSubject).then((karma) => {
-      setKarma(lowerSubject, karma + (increase ? 1 : -1)).then(() => {
-        message.reply({
-          allowedMentions: { repliedUser: false, users: [], parse: [] },
-          content: `${subject} now has **${karma + (increase ? 1 : -1)} karma**`,
-        });
-      });
-    });
+    message.reply(`${subject} now has **${getKarmaFunc(subject)} karma**`);
   },
-});
-
-function getKarma(subject: string): Promise<number> {
-  if (subject.match(/alles( )?bot/i) || subject.includes("<@1269730382765621288>")) {
-    return Promise.resolve(9999999);
-  }
-  if (subject.match(/typst/i)) {
-    return Promise.resolve(9999998);
-  }
-
-  return new Promise<number>((resolve, reject) => {
-    db.get(
-      "SELECT karma FROM karma WHERE subject = ?",
-      [subject],
-      (err, row) => {
-        if (err) {
-          console.error(err);
-          reject(err);
-          return;
-        }
-
-        if (typeof row === "undefined" || row === null) {
-          resolve(0);
-          return;
-        }
-
-        // ja joh tuurlijk
-        if (typeof row === "object") {
-          if ("karma" in row) {
-            if (typeof row.karma === "number") {
-              resolve(row.karma);
-            }
-          }
-        }
-
-        resolve(0);
-      },
-    );
-  });
-}
-
-function setKarma(subject: string, karma: number): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    db.run(
-      "INSERT OR REPLACE INTO karma (subject, karma) VALUES (?, ?)",
-      [subject, karma],
-      (err) => {
-        if (err) {
-          console.error(err);
-          reject(err);
-          return;
-        }
-
-        resolve();
-      },
-    );
-  });
-}
+};

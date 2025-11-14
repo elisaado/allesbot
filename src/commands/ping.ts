@@ -1,25 +1,29 @@
-import { registerCommand } from "../commandHandler.js";
+import { type Message, TextChannel } from "discord.js";
+import type { Command } from "../customTypes.ts";
 
-registerCommand({
+export const ping: Command = {
   name: "ping",
-  command: "ping",
+  command: ".ping",
   description: "Replies with pong and the latency",
-  handle: (message, _) => {
-    const now = Date.now();
-    const diff = now - message.createdTimestamp;
+  showInHelp: true,
+  match: (message: Message) => message.content === ".ping",
+  execute: (message: Message): void => {
+    const diff: number = Date.now() - message.createdTimestamp;
     message.reply(`Pong! Latency: ${diff}ms`);
   },
-});
+};
 
-registerCommand({
+export const editPing: Command = {
   name: "editPing",
-  command: "editPing",
+  command: /.editping/i,
   description: "Measures the latency by editing the message",
-  handle: (message, _) => {
-    message.channel.send("Pinging...").then((sent) => {
-      const now = Date.now();
-      const diff = now - sent.createdTimestamp;
+  showInHelp: true,
+  match: (message: Message) => Boolean(message.content.match(editPing.command)),
+  execute: (message: Message): void => {
+    if (!(message.channel instanceof TextChannel)) return;
+    message.channel.send("Pinging...").then((sent: Message<true>) => {
+      const diff: number = Date.now() - sent.createdTimestamp;
       sent.edit(`Pong! Latency: ${diff}ms`);
     });
   },
-});
+};

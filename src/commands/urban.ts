@@ -1,73 +1,57 @@
-import { registerCommand } from "../commandHandler.js";
+import { EmbedBuilder, type Message } from "discord.js";
+import type {
+  Command,
+  UrbanDictionaryEntry,
+  UrbanDictionaryResponse,
+} from "../customTypes.ts";
 
-registerCommand({
+export const urban: Command = {
   name: "Urban Dictionary",
   command: /^\.(ud|urban) (\d )?(\w+)$/,
   description: "Get the definition of a word from Urban Dictionary",
-  handle(message, args) {
-    const match = message.content.match(/^^\.(ud|urban) (\d )?(\w+)$/);
+  showInHelp: true,
+  match: (message: Message) =>
+    message.content.split(" ")[0] === ".ud"
+    || message.content.split(" ")[0] === ".urban",
+  execute: async (message: Message): Promise<void> => {
+    const word: string = message.content.split(" ")[1];
 
-    if (!match) {
+    if (!word) {
+      message.reply("geef dan ook een woord jij vage kennis");
       return;
     }
 
-    const i = +(match[2] ?? 0);
-    if (i < 0 || i > 9 || isNaN(i)) {
-      message.reply("Invalid index");
+    const response: Response = await fetch(
+      `https://api.urbandictionary.com/v0/define?term=${word}`,
+    );
+
+    if (!response.ok) {
+      message.reply("Oopsie, something went wrong");
       return;
     }
-    const word = match[3];
 
-    fetch(`https://api.urbandictionary.com/v0/define?term=${word}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (!(data instanceof Object)) {
-          message.reply("An error occurred");
-          return;
-        }
-        if ("list" in data === false) {
-          message.reply("An error occurred");
-          return;
-        }
-        if (data.list == undefined) {
-          message.reply("An error occurred");
-          return;
-        }
-        if (!(data.list instanceof Array)) {
-          message.reply("An error occurred");
-          return;
-        }
+    const responseData: UrbanDictionaryResponse = await response.json();
 
-        if (data.list.length === 0) {
-          message.reply("No definition found");
-          return;
-        }
+    if (!(responseData.list && responseData.list[0])) {
+      message.reply("Definition not found :\\");
+      return;
+    }
 
-        if (i >= data.list.length) {
-          message.reply("Index out of range");
-          return;
-        }
+    const dataIWant: UrbanDictionaryEntry = responseData.list[0];
 
-        const word = data.list.sort(
-          (a: any, b: any) => b.thumbs_up - a.thumbs_up,
-        )[i];
+    const udEmbed: EmbedBuilder = new EmbedBuilder()
+      .setTitle(dataIWant.word)
+      .setDescription(dataIWant.definition)
+      .setURL(dataIWant.permalink)
+      .setFooter({
+        text:
+          `By ${dataIWant.author}\n👍 ${dataIWant.thumbs_up} | 👎 ${dataIWant.thumbs_down}`,
+      })
+      .setThumbnail("https://cdn.elisaado.com/ud_logo.jpeg")
+      .setColor(0xf2fd60);
 
-        message.reply({
-          embeds: [
-            {
-              title: word.word,
-              description: word.definition,
-              url: word.permalink,
-              footer: {
-                text: `By ${word.author}\n👍 ${word.thumbs_up} | 👎 ${word.thumbs_down}`,
-              },
-              thumbnail: {
-                url: "https://cdn.elisaado.com/ud_logo.jpeg",
-              },
-              color: 0xf2fd60,
-            },
-          ],
-        });
-      });
+    message.reply({
+      embeds: [udEmbed],
+    });
   },
-});
+};

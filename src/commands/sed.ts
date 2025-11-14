@@ -1,51 +1,63 @@
-import { registerCommand } from "../commandHandler.js";
-import client from "../index.js";
+import type { Message } from "discord.js";
+import { client } from "../client.ts";
+import type { Command } from "../customTypes.ts";
 
-registerCommand({
+export const sed: Command = {
   name: "sed",
-  command: /^`?\.s`?\/`?(\\.|[^\/])*\/(\\.|[^\/])*?(\/.*?)?`?$/,
+  command: /^`?\.s`?\/`?((?:\\.|[^\/])*)\/((?:\\.|[^\/])*?)(\/(.*?))?`?$/,
   description: "Use sed to replace text in the replied to message",
-  handle: (message, _) => {
+  showInHelp: true,
+  match: (message: Message) =>
+    Boolean(message.content.match(
+      /^`?\.s`?\/`?((?:\\.|[^\/])*)\/((?:\\.|[^\/])*?)(\/(.*?))?`?$/,
+    )),
+  execute: (message: Message): void => {
     if (
-      message.reference == null ||
-      message.reference.messageId == null ||
-      message.author.id === client.user?.id
+      !(message.reference && message.reference.messageId)
     ) {
+      message.reply("je moet een message replyen om dit te kunnen doen gekkie");
       return;
     }
 
-    const match = message.content.match(/^`?\.s`?\/`?((?:\\.|[^\/])*)\/((?:\\.|[^\/])*?)(\/(.*?))?`?$/);
-    if (!match) {
-      return;
-    }
+    const match: RegExpMatchArray | null = message.content.match(
+      /^`?\.s`?\/`?((?:\\.|[^\/])*)\/((?:\\.|[^\/])*?)(\/(.*?))?`?$/,
+    );
+
+    if (!match) return;
+    // Will never be the case but typescript will act quirky if I dont include it
 
     const [, find, replace, , options] = match;
-    if (find == null || replace == null) {
-      return;
-    }
+    if (!(find && replace)) return;
+
     if (options) {
       if (options.match(/[^gmi]/)) {
-        return message.reply("Duplicate regex options");
+        message.reply("Duplicate regex options");
       }
 
-      const splitted = options.split("");
+      const splitted: string[] = options.split("");
       if (new Set(splitted).size !== splitted.length) {
-        return message.reply("Invalid regex options");
+        message.reply("Invalid regex options");
       }
     }
-    const reply = message.channel.messages.cache.get(
-      message.reference.messageId,
-    );
-    if (reply?.author.id === client.user?.id) {
+
+    const replyMessage: Message<boolean> | undefined = message.channel.messages
+      .cache.get(
+        message.reference.messageId,
+      );
+
+    if (!replyMessage) {
+      message.reply(
+        "er ging iets mis tijdens het zoeken van de message waarop je reageerde, sorry",
+      );
       return;
     }
 
-    if (reply == null) {
-      return;
-    }
+    if (replyMessage.author.id === client.user?.id) return;
 
-    const oldContent = reply.content || reply.embeds?.[0]?.description || "";
-    const newContent = oldContent.replace(
+    const oldContent: string = replyMessage.content
+      || replyMessage.embeds?.[0]?.description
+      || "";
+    const newContent: string = oldContent.replace(
       new RegExp(find, options ?? "g"),
       replace.replace(/\\(.)/g, "$1"),
     );
@@ -53,9 +65,10 @@ registerCommand({
       message.reply("Resulting message is te lang aapje");
       return;
     }
-    reply.reply({
+
+    replyMessage.reply({
       allowedMentions: { repliedUser: false },
       content: `Did you mean:\n${newContent}`,
     });
   },
-});
+};

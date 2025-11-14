@@ -1,102 +1,37 @@
-import env from "./env.js";
+import fs from "node:fs";
+import path from "node:path";
+import { client } from "./client.ts";
+import { type BotEvent, BotEventGuard } from "./customTypes.ts";
+import { env } from "./env.ts";
 
-import {
-  ApplicationCommandType,
-  Client,
-  ContextMenuCommandBuilder,
-  GatewayIntentBits,
-  REST,
-  Routes,
-} from "discord.js";
-import {
-  getHandlers,
-  getRegexHandlers,
-  handleCommand,
-  registerCommand,
-} from "./commandHandler.js";
+const eventsPath: string = path.join(import.meta.dirname ?? "", "events");
+const eventFiles: string[] = fs
+  .readdirSync(eventsPath)
+  .filter((file: string) => file.endsWith(".ts"));
 
-import db from "./db.js";
+for (const file of eventFiles) {
+  const filePath: string = path.join(eventsPath, file);
+  const module: object = await import(`file:///${filePath}`);
 
-import * as _ from "./commands/activatedCommands.js";
-import { handlePin, handleUnpin } from "./commands/pin.js";
+  for (const entry of Object.entries(module)) {
+    if (!BotEventGuard(entry[1])) {
+      console.error(
+        `[WARNING] The module at ${filePath} is doesn't really look like an event..`,
+      );
 
-const client = new Client({
-  intents: [
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildPresences,
-    GatewayIntentBits.DirectMessages,
-  ],
-});
+      continue;
+    }
 
-client.on("ready", async (client) => {
-  console.log(`Logged in as ${client.user.tag}`);
+    const event: BotEvent = entry[1] as BotEvent;
 
-  registerCommand({
-    name: "help",
-    command: "help",
-    description: "Lists all available commands",
-    handle: (message, _) => {
-      const handlers = getHandlers();
-      const regexHandlers = getRegexHandlers();
-      const commands = [Object.values(handlers), regexHandlers]
-        .flat()
-        .filter((handler) => handler.showInHelp !== false)
-        .map((handler) => {
-          const { name, description, command } = handler;
-          let commandString =
-            typeof command === "string" ? "." + command : command.toString();
+    if (event.once) {
+      client.once(event.type as string, (...args) => event.execute(...args));
+      continue;
+    }
 
-          return `**${name}** (\`\`${commandString}\`\`): ${description}`;
-        })
-        .join("\n");
-      message.reply({
-        allowedMentions: { repliedUser: false },
-        content: `${commands}\n\nUse .<command> to run a command`,
-      });
-    },
-  });
-
-  const data = [
-    new ContextMenuCommandBuilder()
-      .setName("Pin")
-      .setType(ApplicationCommandType.Message),
-    new ContextMenuCommandBuilder()
-      .setName("Unpin")
-      .setType(ApplicationCommandType.Message),
-  ];
-
-  const rest = new REST().setToken(env.DISCORD_TOKEN);
-  await rest.put(Routes.applicationCommands(client.user.id), {
-    body: data.map((cmd) => cmd.toJSON()),
-  });
-});
-
-function exitGracefully() {
-  db.close();
-  process.exit();
+    client.on(event.type as string, (...args) => event.execute(...args));
+  }
 }
 
-process.on("SIGTERM", exitGracefully);
-process.on("SIGINT", exitGracefully);
-
-client.on("messageCreate", handleCommand);
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isMessageContextMenuCommand()) return;
-  const { commandName, member: apiMember } = interaction;
-  if (!apiMember) return;
-  const member = await interaction.guild?.members.fetch(apiMember.user.id);
-  if (!member) return;
-
-  if (commandName === "Pin") {
-    handlePin(interaction, member);
-  } else if (commandName === "Unpin") {
-    handleUnpin(interaction, member);
-  }
-});
-
+// Finally, login to discord
 client.login(env.DISCORD_TOKEN);
-
-export default client;

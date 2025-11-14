@@ -1,22 +1,25 @@
-import { registerCommand } from "../commandHandler.js";
+import type { Message } from "discord.js";
+import type { Command } from "../customTypes.ts";
 
-registerCommand({
+export const funny: Command = {
   name: "funny",
   command:
     /^(pr dan)|((alles is stuk)|(stomme bot)|(alles( )?bot is stom)|(ik haat alles( )?bot)|(waarom kan alles( )?bot (.*) niet))$/i,
   description: "grappig (geen commando)",
   showInHelp: false,
-  handle: async (message, args) => {
+  match: (message: Message) => Boolean(message.content.match(funny.command)),
+  execute: async (message: Message): Promise<void> => {
     if (
-      message.content === "pr dan" &&
-      message.reference &&
-      message.reference.messageId
+      message.content === "pr dan"
+      && message.reference
+      && message.reference.messageId
     ) {
-      const referencedMessage = await message.channel.messages.fetch(
-        message.reference.messageId,
-      );
+      const referencedMessage: Message<boolean> = await message.channel.messages
+        .fetch(
+          message.reference.messageId,
+        );
       message = referencedMessage;
     }
     message.reply("maak een pr dan :) <https://github.com/elisaado/allesbot>");
   },
-});
+};
