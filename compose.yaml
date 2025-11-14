@@ -1,0 +1,10 @@
+services:
+  server:
+    image: allesbot
+    build:
+      context: .
+      dockerfile: Dockerfile
+    develop:
+      watch:
+        - action: rebuild
+          path: .

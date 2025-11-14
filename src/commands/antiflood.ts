@@ -11,9 +11,10 @@ export const antiflood: Command = {
   command: /.+/,
   description: "niet spammen",
   showInHelp: false,
-  match: (message: Message) => message.author.id === client.user?.id,
+  match: (message: Message) =>
+    // !A && !B = !(A || B)
+    !(message.author.id === client.user?.id || message.author.bot),
   execute: (message: Message): void => {
-    if (message.author.bot) return;
     const now: number = new Date().valueOf();
     let bucket: BucketContent = buckets[message.author.id];
 

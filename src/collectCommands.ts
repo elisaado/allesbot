@@ -25,7 +25,7 @@ for (const file of commandFiles) {
     }
 
     console.error(
-      `[WARNING] The module at ${filePath} is doesn't really look like a command..`,
+      `[WARNING] The export ${entry[0]} module at ${filePath} doesn't really look like a command..`,
     );
   }
 }

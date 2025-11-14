@@ -8,21 +8,6 @@ import type {
 import { db } from "../db.ts";
 import { env } from "../env.ts";
 
-export function trackEmbedBuilder(
-  trackPlaying: Track,
-  pfp: string,
-): EmbedBuilder {
-  return new EmbedBuilder()
-    .setTitle(trackPlaying.name)
-    .setURL(trackPlaying.url)
-    .setAuthor({
-      name: "•  Now Playing",
-      iconURL: pfp,
-    })
-    .setThumbnail(trackPlaying.image)
-    .setDescription(`**${trackPlaying.artist}** on _${trackPlaying.album}_`);
-}
-
 export const np: Command = {
   name: "np",
   command: ".np",

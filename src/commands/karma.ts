@@ -39,7 +39,7 @@ function setKarmaFunc(subject: string, newKarma: number): void {
 
 export const getKarma: Command = {
   name: "getKarma",
-  command: ".karma ",
+  command: ".karma",
   description: "Get karma of something",
   showInHelp: true,
   match: (message: Message) => message.content.split(" ")[0] === ".karma",

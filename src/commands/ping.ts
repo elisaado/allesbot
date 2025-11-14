@@ -15,10 +15,10 @@ export const ping: Command = {
 
 export const editPing: Command = {
   name: "editPing",
-  command: ".editPing",
+  command: /.editping/i,
   description: "Measures the latency by editing the message",
   showInHelp: true,
-  match: (message: Message) => message.content === ".editPing",
+  match: (message: Message) => Boolean(message.content.match(editPing.command)),
   execute: (message: Message): void => {
     if (!(message.channel instanceof TextChannel)) return;
     message.channel.send("Pinging...").then((sent: Message<true>) => {
