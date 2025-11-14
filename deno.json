@@ -2,11 +2,9 @@
   "nodeModulesDir": "auto",
   "tasks": {
     "dev": "deno run -A src/index.ts",
-    "dev-db": "rm daataabaasaa.db; deno run -A src/db.ts; deno run dev",
     "dev-watch": "deno run -A --watch src/index.ts",
-    "dev-db-watch": "rm daataabaasaa.db; deno run -A src/db.ts; deno run dev-watch",
-
-    "build": "deno run -A src/env.ts; deno run -A src/index.ts"
+    "dev-db": "rm daataabaasaa.db; deno run -A src/db.ts; deno run dev",
+    "dev-db-watch": "rm daataabaasaa.db; deno run -A src/db.ts; deno run dev-watch"
   },
   "imports": {
     "$src/": "./src/",
