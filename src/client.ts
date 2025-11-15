@@ -1,6 +1,6 @@
 import { Client, GatewayIntentBits } from "discord.js";
 
-export const client: Client<boolean> = new Client({
+export const client = new Client({
   intents: [
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers,

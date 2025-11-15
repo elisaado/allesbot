@@ -6,6 +6,7 @@ import {
 } from "discord.js";
 import type { Command } from "../customTypes.ts";
 import { db } from "../db.ts";
+import { env } from "../env.ts";
 import { biggestStringSize, sortRecord } from "../utils.ts";
 
 let todaysFipos: Message<boolean>[] = [];
@@ -63,7 +64,7 @@ export const fipo: Command = {
             ) === getDayOfDateWithCorrectTimezoneForReal(new Date())
           );
         })
-        .sort((a: Message<boolean>, b: Message<boolean>) => {
+        .sort((a, b) => {
           return a.createdTimestamp - b.createdTimestamp;
         })[0];
 
@@ -79,13 +80,12 @@ export const fipo: Command = {
 
       // the array is still needed though, to not start a lot of timeouts
 
-      const alreadyDone: object | undefined = db.prepare(
-        "SELECT * FROM fipos WHERE date = ?",
-      ).get(
+      const alreadyDone = db
+        .sql`SELECT * FROM fipos WHERE date = ${
         getAsStringDateWithCorrectTimezoneForReal(
           new Date(fipo.createdTimestamp),
-        ),
-      );
+        )
+      }`;
 
       if (alreadyDone) {
         console.log({ fipoAlreadyDone: alreadyDone });
@@ -94,7 +94,7 @@ export const fipo: Command = {
 
       if (
         !(message.channel instanceof TextChannel)
-        || message.channel.id !== "789249810032361508"
+        || message.channel.id !== env.BEKEND_ROLE_ID
       ) {
         message.reply(
           "je kan alleen fipo doen in <#789249810032361508> makker",
@@ -104,13 +104,11 @@ export const fipo: Command = {
 
       message.channel.send("W00t " + fipo.author.toString() + "!");
 
-      db.prepare("INSERT INTO fipos (discord_id, date) VALUES (?, ?)")
-        .get(
-          fipo.author.id,
-          getAsStringDateWithCorrectTimezoneForReal(
-            new Date(fipo.createdTimestamp),
-          ),
-        );
+      db.sql`INSERT INTO fipos (discord_id, date) VALUES (${fipo.author.id}, ${
+        getAsStringDateWithCorrectTimezoneForReal(
+          new Date(fipo.createdTimestamp),
+        )
+      })`;
     }, 1000);
   },
 };
@@ -124,10 +122,8 @@ export const fipoStats: Command = {
   execute: async (message: Message): Promise<void> => {
     if (!message.guild) return;
 
-    // for some reason unbeknownst to me, this is an array
-    const rawFipoEntries: Record<string, number | string>[] = db.prepare(
-      "SELECT * FROM fipos",
-    ).all();
+    const rawFipoEntries: Record<string, number | string>[] = db.sql`
+      SELECT * FROM fipos`;
 
     const fipoEntries: { discord_id: string; date: string }[] = [];
 
@@ -150,18 +146,19 @@ export const fipoStats: Command = {
     let fipoStats: Record<string, number> = {};
 
     for (const fipoEntry of fipoEntries) {
-      const currentMember: string = userLookUp[fipoEntry.discord_id];
+      const currentMember = userLookUp[fipoEntry.discord_id];
       if (typeof fipoStats[currentMember] !== "number") {
         fipoStats[currentMember] = 0;
       }
 
       fipoStats[currentMember]++;
     }
+
     fipoStats = sortRecord(fipoStats);
 
-    const longestUsername: number = biggestStringSize(fipoStats);
+    const longestUsername = biggestStringSize(fipoStats);
 
-    let returnMessage: string = "# fipostats\n```\n";
+    let returnMessage = "# fipostats\n```\n";
     for (const fipoStat of Object.entries(fipoStats)) {
       returnMessage += fipoStat[0]
         + " ".repeat(longestUsername + 4 - fipoStat[0].length) + ": "
@@ -184,7 +181,7 @@ export const fipoReset: Command = {
     }
 
     try {
-      db.exec("DELETE FROM fipos");
+      db.sql`DELETE FROM fipos`;
 
       todaysFipos = [];
       recordedDate = "0";

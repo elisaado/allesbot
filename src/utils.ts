@@ -16,3 +16,7 @@ export function biggestStringSize<T>(
 
   return biggest;
 }
+
+function thing(): string {
+  return "thing";
+}

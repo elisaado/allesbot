@@ -4,13 +4,13 @@ import { client } from "./client.ts";
 import { type BotEvent, BotEventGuard } from "./customTypes.ts";
 import { env } from "./env.ts";
 
-const eventsPath: string = path.join(import.meta.dirname ?? "", "events");
-const eventFiles: string[] = fs
+const eventsPath = path.join(import.meta.dirname ?? "", "events");
+const eventFiles = fs
   .readdirSync(eventsPath)
-  .filter((file: string) => file.endsWith(".ts"));
+  .filter((file) => file.endsWith(".ts"));
 
 for (const file of eventFiles) {
-  const filePath: string = path.join(eventsPath, file);
+  const filePath = path.join(eventsPath, file);
   const module: object = await import(`file:///${filePath}`);
 
   for (const entry of Object.entries(module)) {
@@ -22,7 +22,7 @@ for (const file of eventFiles) {
       continue;
     }
 
-    const event: BotEvent = entry[1] as BotEvent;
+    const event = entry[1] as BotEvent;
 
     if (event.once) {
       client.once(event.type as string, (...args) => event.execute(...args));

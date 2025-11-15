@@ -26,11 +26,6 @@ export const BotEventGuard = (object: object) =>
 
 export type MaybePromiseVoid = void | Promise<void>;
 
-export type BucketContent = {
-  lastTS: number;
-  count: number;
-};
-
 export type UrbanDictionaryEntry = {
   author: string;
   current_vote: string;

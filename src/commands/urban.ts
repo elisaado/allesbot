@@ -14,14 +14,14 @@ export const urban: Command = {
     message.content.split(" ")[0] === ".ud"
     || message.content.split(" ")[0] === ".urban",
   execute: async (message: Message): Promise<void> => {
-    const word: string = message.content.split(" ")[1];
+    const word = message.content.split(" ")[1];
 
     if (!word) {
       message.reply("geef dan ook een woord jij vage kennis");
       return;
     }
 
-    const response: Response = await fetch(
+    const response = await fetch(
       `https://api.urbandictionary.com/v0/define?term=${word}`,
     );
 
@@ -39,7 +39,7 @@ export const urban: Command = {
 
     const dataIWant: UrbanDictionaryEntry = responseData.list[0];
 
-    const udEmbed: EmbedBuilder = new EmbedBuilder()
+    const udEmbed = new EmbedBuilder()
       .setTitle(dataIWant.word)
       .setDescription(dataIWant.definition)
       .setURL(dataIWant.permalink)

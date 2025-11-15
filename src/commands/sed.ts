@@ -19,7 +19,7 @@ export const sed: Command = {
       return;
     }
 
-    const match: RegExpMatchArray | null = message.content.match(
+    const match = message.content.match(
       /^`?\.s`?\/`?((?:\\.|[^\/])*)\/((?:\\.|[^\/])*?)(\/(.*?))?`?$/,
     );
 
@@ -34,13 +34,13 @@ export const sed: Command = {
         message.reply("Duplicate regex options");
       }
 
-      const splitted: string[] = options.split("");
+      const splitted = options.split("");
       if (new Set(splitted).size !== splitted.length) {
         message.reply("Invalid regex options");
       }
     }
 
-    const replyMessage: Message<boolean> | undefined = message.channel.messages
+    const replyMessage = message.channel.messages
       .cache.get(
         message.reference.messageId,
       );
@@ -54,10 +54,10 @@ export const sed: Command = {
 
     if (replyMessage.author.id === client.user?.id) return;
 
-    const oldContent: string = replyMessage.content
+    const oldContent = replyMessage.content
       || replyMessage.embeds?.[0]?.description
       || "";
-    const newContent: string = oldContent.replace(
+    const newContent = oldContent.replace(
       new RegExp(find, options ?? "g"),
       replace.replace(/\\(.)/g, "$1"),
     );

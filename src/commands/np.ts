@@ -19,29 +19,29 @@ export const np: Command = {
 
     // Check of er een arg is
     if (lastFMUsername === "") {
-      const thing: { lastfm_username: string } | undefined = db.prepare(
-        "SELECT lastfm_username FROM users WHERE discord_id = ?",
-      ).get(message.author.id);
+      const thing = db
+        .sql`SELECT lastfm_username FROM users WHERE discord_id = ${message.author.id}`;
+
+      console.log(thing);
 
       // als thing undefined is, is er geen username in de db
-      if (thing === undefined) {
+      if (thing[0].lastfm_username === undefined) {
         message.reply("jij hebt geen username, kameraad");
         return;
       }
 
-      lastFMUsername = thing.lastfm_username;
+      lastFMUsername = thing[0].lastfm_username;
     } else if (
-      db.prepare(
-        "SELECT discord_id FROM users WHERE lastfm_username = ?",
-      ).get(lastFMUsername) === undefined
+      db.sql`SELECT discord_id FROM users WHERE lastfm_username = ${lastFMUsername}`
+        === undefined
     ) {
       message.reply("die username heb ik niet, maat");
       return;
     }
 
-    const baseUrl: string =
+    const baseUrl =
       `http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${lastFMUsername}&api_key=${env.LASTFM_API_KEY}&format=json`;
-    const response: Response = await fetch(baseUrl);
+    const response = await fetch(baseUrl);
 
     if (!response.ok) {
       message.reply("Er ging iets mis owo :3");
@@ -67,10 +67,10 @@ export const np: Command = {
       url: dataIWant[0].url,
     };
 
-    const pfpURL: string = message.author.avatarURL()
+    const pfpURL = message.author.avatarURL()
       ?? message.author.defaultAvatarURL;
 
-    const trackEmbed: EmbedBuilder = new EmbedBuilder()
+    const trackEmbed = new EmbedBuilder()
       .setTitle(nowPlaying.name)
       .setURL(nowPlaying.url)
       .setAuthor({
@@ -101,13 +101,9 @@ export const setNPUser: Command = {
     }
 
     try {
-      db.prepare(
-        "DELETE FROM users WHERE discord_id = ?",
-      ).get(message.author.id);
+      db.sql`DELETE FROM users WHERE discord_id = ${message.author.id}`;
 
-      db.prepare(
-        "INSERT INTO users (discord_id, lastfm_username) VALUES (?, ?)",
-      ).get(message.author.id, lastFMUsername);
+      db.sql`INSERT INTO users (discord_id, lastfm_username) VALUES (${message.author.id}, ${lastFMUsername})`;
     } catch (err) {
       console.error(err);
       message.reply("wtf er ging iets mis ofzo?");

@@ -75,8 +75,7 @@ export const unpin: Command = {
       return;
     }
 
-    const referenced: OmitPartialGroupDMChannel<Message<boolean>> =
-      await message.fetchReference();
+    const referenced = await message.fetchReference();
 
     if (!referenced.pinned) {
       message.reply(

@@ -44,7 +44,7 @@ export const getKarma: Command = {
   showInHelp: true,
   match: (message: Message) => message.content.split(" ")[0] === ".karma",
   execute: (message: Message): void => {
-    const subject: string = message.content.split(" ").slice(1).join();
+    const subject = message.content.split(" ").slice(1).join();
 
     message.reply(`${subject} has **${getKarmaFunc(subject)} karma**`);
   },
@@ -58,13 +58,10 @@ export const setKarma: Command = {
   match: (message: Message) =>
     message.content.endsWith("--") || message.content.endsWith("++"),
   execute: (message: Message): void => {
-    const subject: string = message.content.substring(
-      0,
-      message.content.length - 2,
-    )
+    const subject = message.content.substring(0, message.content.length - 2)
       .trim();
 
-    const curKarma: number = getKarmaFunc(subject);
+    const curKarma = getKarmaFunc(subject);
 
     setKarmaFunc(subject, curKarma + (message.content.endsWith("++") ? 1 : -1));
 

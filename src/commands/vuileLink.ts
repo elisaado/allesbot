@@ -20,17 +20,17 @@ export const ping: Command = {
     // allesbot is heilig
     if (message.author.id === client.user?.id) return;
 
-    const urlInMessage: string | undefined = message.content.match(
+    const urlInMessage = message.content.match(
       /(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/i,
     )?.[0];
 
     if (!urlInMessage) return;
 
-    const parsedUrl: URL | null = URL.parse(urlInMessage);
+    const parsedUrl = URL.parse(urlInMessage);
     if (!parsedUrl) return;
 
     // we can't delete because the for loop internally keeps an index which will shift we we delete
-    const toDelete: string[] = [];
+    const toDelete = [];
     for (const key of parsedUrl.searchParams.keys()) {
       if (badKeys.includes(key)) toDelete.push(key);
     }
@@ -39,7 +39,7 @@ export const ping: Command = {
 
     for (const badKey of toDelete) parsedUrl.searchParams.delete(badKey);
 
-    const cleanURL: string = parsedUrl.toString();
+    const cleanURL = parsedUrl.toString();
     message.reply(
       `jij bent VIES en je stomme linkje ook! Hier is een schone versie: ${cleanURL}`,
     );

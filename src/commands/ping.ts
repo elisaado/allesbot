@@ -8,7 +8,8 @@ export const ping: Command = {
   showInHelp: true,
   match: (message: Message) => message.content === ".ping",
   execute: (message: Message): void => {
-    const diff: number = Date.now() - message.createdTimestamp;
+    const diff = Date.now() - message.createdTimestamp;
+
     message.reply(`Pong! Latency: ${diff}ms`);
   },
 };
@@ -21,8 +22,10 @@ export const editPing: Command = {
   match: (message: Message) => Boolean(message.content.match(editPing.command)),
   execute: (message: Message): void => {
     if (!(message.channel instanceof TextChannel)) return;
-    message.channel.send("Pinging...").then((sent: Message<true>) => {
-      const diff: number = Date.now() - sent.createdTimestamp;
+
+    message.channel.send("Pinging...").then((sent) => {
+      const diff = Date.now() - sent.createdTimestamp;
+
       sent.edit(`Pong! Latency: ${diff}ms`);
     });
   },

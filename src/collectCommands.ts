@@ -6,16 +6,16 @@ import { type Command, CommandGuard } from "./customTypes.ts";
 const commands: Command[] = [];
 
 // Grabs all files in commands/slashCommands
-const commandsPath: string = path.join(
+const commandsPath = path.join(
   import.meta.dirname ?? "",
   "commands",
 );
-const commandFiles: string[] = fs
+const commandFiles = fs
   .readdirSync(commandsPath)
-  .filter((file: string) => file.endsWith(".ts"));
+  .filter((file) => file.endsWith(".ts"));
 
 for (const file of commandFiles) {
-  const filePath: string = path.join(commandsPath, file);
+  const filePath = path.join(commandsPath, file);
   const module: object = await import(`file:///${filePath}`);
 
   for (const entry of Object.entries(module)) {
@@ -25,7 +25,9 @@ for (const file of commandFiles) {
     }
 
     console.error(
-      `[WARNING] The export ${entry[0]} module at ${filePath} doesn't really look like a command..`,
+      `[WARNING] The export ${
+        entry[0]
+      } module at ${filePath} doesn't really look like a command..`,
     );
   }
 }
@@ -37,7 +39,7 @@ commands.push({
   showInHelp: true,
   match: (message: Message) => message.content === ".help",
   execute: (message: Message): void => {
-    let returnMessage: string = "";
+    let returnMessage = "";
     for (const command of commands) {
       if (command.showInHelp) {
         returnMessage +=

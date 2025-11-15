@@ -1,9 +1,14 @@
 import type { Message } from "discord.js";
 import { client } from "../client.ts";
-import type { BucketContent, Command } from "../customTypes.ts";
+import type { Command } from "../customTypes.ts";
+
+export type BucketContent = {
+  lastTS: number;
+  count: number;
+};
 
 // leaky bucket implementation
-const max_bucket_size: number = 10 as const;
+const maxBucketSize = 10;
 const buckets: Record<string, BucketContent> = {};
 
 export const antiflood: Command = {
@@ -12,11 +17,10 @@ export const antiflood: Command = {
   description: "niet spammen",
   showInHelp: false,
   match: (message: Message) =>
-    // !A && !B = !(A || B)
     !(message.author.id === client.user?.id || message.author.bot),
   execute: (message: Message): void => {
-    const now: number = new Date().valueOf();
-    let bucket: BucketContent = buckets[message.author.id];
+    const now = new Date().valueOf();
+    let bucket = buckets[message.author.id];
 
     if (!bucket) {
       bucket = {
@@ -28,15 +32,13 @@ export const antiflood: Command = {
       return;
     }
 
-    const elapsed: number = now - bucket.lastTS;
+    const elapsed = now - bucket.lastTS;
 
     // bucket leaks one every 2 seconds, but can never reach below 1
     bucket.count = Math.max(1, bucket.count + 1 - Math.floor(elapsed / 2000));
 
-    console.log({ bucket });
-
     // time out user
-    if (bucket.count > max_bucket_size) {
+    if (bucket.count > maxBucketSize) {
       const guildmember = message.mentions.members?.first()
         ? message.mentions.members.first()
         : message.guild?.members.cache.get(message.author.id);
