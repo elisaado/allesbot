@@ -176,7 +176,7 @@ export const fipoReset: Command = {
   showInHelp: false,
   match: (message: Message) => message.content === fipoReset.command,
   execute: (message: Message) => {
-    if (message.author.id !== "783447871596920892") {
+    if (message.author.id !== env.HOUSEMASTER_ID) {
       message.reply("You are not allowed to do that!");
       return;
     }

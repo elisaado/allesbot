@@ -15,6 +15,7 @@ for (const commandFile of commandFiles) {
       console.warn(
         `[WARNING] The export ${name} in module ${commandFile.name} doesn't really look like a command..`,
       );
+
       continue;
     }
 

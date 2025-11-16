@@ -13,7 +13,8 @@
     "jsr:@std/path@0.217": "0.217.0",
     "jsr:@std/path@1": "1.1.2",
     "jsr:@std/path@^1.1.1": "1.1.2",
-    "npm:discord.js@^14.24.2": "14.24.2"
+    "npm:discord.js@^14.24.2": "14.24.2",
+    "npm:zod@^4.1.12": "4.1.12"
   },
   "jsr": {
     "@db/sqlite@0.12.0": {
@@ -198,13 +199,17 @@
     },
     "ws@8.18.3": {
       "integrity": "sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg=="
+    },
+    "zod@4.1.12": {
+      "integrity": "sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ=="
     }
   },
   "workspace": {
     "dependencies": [
       "jsr:@db/sqlite@0.12",
       "jsr:@std/dotenv@~0.225.5",
-      "npm:discord.js@^14.24.2"
+      "npm:discord.js@^14.24.2",
+      "npm:zod@^4.1.12"
     ]
   }
 }

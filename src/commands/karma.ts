@@ -11,17 +11,17 @@ const specialKarmaValues: [string | RegExp, number][] = [
 
 function getKarmaFunc(subject: string): number {
   subject = subject.toLowerCase();
-  for (const specialKarmaValue of specialKarmaValues) {
+  for (const [specialSubject, specialKarma] of specialKarmaValues) {
     if (
       (
-        typeof specialKarmaValue[0] === typeof RegExp
-        && subject.match(specialKarmaValue[0])
+        typeof specialSubject === typeof RegExp
+        && subject.match(specialSubject)
       )
       || (
-        typeof specialKarmaValue[0] === "string"
-        && subject === specialKarmaValue[0]
+        typeof specialSubject === "string"
+        && subject === specialSubject
       )
-    ) return specialKarmaValue[1];
+    ) return specialKarma;
   }
 
   return (db.sql`SELECT karma FROM karma WHERE subject = ${subject}` as {

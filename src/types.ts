@@ -10,8 +10,7 @@ export type Command = {
 };
 
 export const commandGuard = (object: object) =>
-  "match" in object
-  && "execute" in object;
+  "match" in object && "execute" in object;
 
 export type BotEvent = {
   type: Events;

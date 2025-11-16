@@ -17,4 +17,4 @@ RUN deno install
 RUN deno cache src/index.ts
 
 # Run the app with env var, read, and network permissions
-CMD ["deno", "run", "-E", "-R", "-N", "src/index.ts"]
+CMD ["deno", "run", "-E", "--env-file=.env" , "-R", "-N", "src/index.ts"]

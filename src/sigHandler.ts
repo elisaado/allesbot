@@ -5,6 +5,7 @@ let handlers: (() => MaybePromiseVoid)[] = [];
 export const addSigListener = (fun: () => MaybePromiseVoid): void => {
   handlers.push(fun);
 };
+
 export const removeSigListener = (fun: () => MaybePromiseVoid): void => {
   handlers = handlers.filter((v) => v === fun);
 };

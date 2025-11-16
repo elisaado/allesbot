@@ -9,16 +9,16 @@ const eventFiles = Deno
 for (const eventFile of eventFiles) {
   const module = await import(`./events/${eventFile.name}`) as object;
 
-  for (let [name, event] of Object.entries(module)) {
-    if (!botEventGuard(event)) {
+  for (const [name, entry] of Object.entries(module)) {
+    if (!botEventGuard(entry)) {
       console.warn(
-        `[WARNING] The export ${name} in module ${eventFile.name} doesn't really look like a command..`,
+        `[WARNING] The export ${name} in module ${eventFile.name} doesn't really look like an event..`,
       );
 
       continue;
     }
 
-    event = event as BotEvent;
+    const event = entry as BotEvent;
 
     if (event.once) {
       client.once(event.type as string, (...args) => event.execute(...args));

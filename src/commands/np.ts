@@ -60,22 +60,20 @@ export const np: Command = {
     let lastFMUsername = message.content.split(" ").slice(1).join();
 
     // Check of er een arg is
-    if (lastFMUsername === "") {
-      const thing = db
-        .sql`SELECT lastfm_username FROM users WHERE discord_id = ${message.author.id}`;
-
-      console.log(thing);
+    if (!lastFMUsername) {
+      lastFMUsername = (db
+        .sql`SELECT lastfm_username FROM users WHERE discord_id = ${message.author.id}`)[
+          0
+        ].lastfm_username;
 
       // als thing undefined is, is er geen username in de db
-      if (thing[0].lastfm_username === undefined) {
+      if (!lastFMUsername) {
         message.reply("jij hebt geen username, kameraad");
         return;
       }
-
-      lastFMUsername = thing[0].lastfm_username;
     } else if (
-      db.sql`SELECT discord_id FROM users WHERE lastfm_username = ${lastFMUsername}`
-        === undefined
+      !db
+        .sql`SELECT discord_id FROM users WHERE lastfm_username = ${lastFMUsername}`[0]
     ) {
       message.reply("die username heb ik niet, maat");
       return;
