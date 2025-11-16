@@ -7,7 +7,7 @@ export const pin: Command = {
   command: ".pin",
   description: "Pin een bericht",
   showInHelp: true,
-  match: (message: Message) => message.content === ".pin",
+  match: (message: Message) => message.content === pin.command,
   execute: async (message: Message): Promise<void> => {
     if (
       message.reference === null
@@ -51,7 +51,7 @@ export const unpin: Command = {
   command: ".unpin",
   description: "Unpin een bericht",
   showInHelp: true,
-  match: (message: Message) => message.content === ".unpin",
+  match: (message: Message) => message.content === unpin.command,
   execute: async (message: Message): Promise<void> => {
     if (
       message.reference === null

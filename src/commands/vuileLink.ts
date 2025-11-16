@@ -4,22 +4,16 @@ import type { Command } from "../types.ts";
 // thank you for the list, https://stackoverflow.com/questions/76372936/what-is-the-most-efficient-way-to-remove-tracking-marketing-etc-query-parameter
 import badKeys from "$static/badKeys.json" with { type: "json" };
 
-export const ping: Command = {
+export const vuileLink: Command = {
   name: "vuileLink",
   command:
     /(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/="'!]*)/,
   description: "maakt links schoon (geen commando)",
   showInHelp: false,
   match: (message: Message) =>
-    Boolean(
-      message.content.match(
-        /(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/="'!]*)/,
-      ),
-    ),
+    Boolean(message.content.match(vuileLink.command))
+    && message.author.id !== client.user?.id,
   execute: (message: Message): void => {
-    // allesbot is heilig
-    if (message.author.id === client.user?.id) return;
-
     const urlInMessage = message.content.match(
       /(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/i,
     )?.[0];

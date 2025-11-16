@@ -6,7 +6,7 @@ export const ping: Command = {
   command: ".ping",
   description: "Replies with pong and the latency",
   showInHelp: true,
-  match: (message: Message) => message.content === ".ping",
+  match: (message: Message) => message.content === ping.command,
   execute: (message: Message): void => {
     const diff = Date.now() - message.createdTimestamp;
 

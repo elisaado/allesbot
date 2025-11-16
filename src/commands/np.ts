@@ -55,7 +55,7 @@ export const np: Command = {
   command: ".np",
   description: "Shows your or someone else's currently playing track",
   showInHelp: true,
-  match: (message: Message) => message.content.split(" ")[0] === ".np",
+  match: (message: Message) => message.content.split(" ")[0] === np.command,
   execute: async (message: Message): Promise<void> => {
     let lastFMUsername = message.content.split(" ").slice(1).join();
 
@@ -133,7 +133,8 @@ export const setNPUser: Command = {
   command: ".setnpuser",
   description: "Sets the Last.fm username",
   showInHelp: true,
-  match: (message: Message) => message.content.split(" ")[0] === ".setnpuser",
+  match: (message: Message) =>
+    message.content.split(" ")[0] === setNPUser.command,
   execute: (message: Message): void => {
     const lastFMUsername: string = message.content.split(" ").slice(1).join();
 

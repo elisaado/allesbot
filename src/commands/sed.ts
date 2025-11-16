@@ -16,9 +16,7 @@ export const sed: Command = {
       return;
     }
 
-    const match = message.content.match(
-      /^`?\.s`?\/`?((?:\\.|[^\/])*)\/((?:\\.|[^\/])*?)(\/(.*?))?`?$/,
-    );
+    const match = message.content.match(sed.command);
 
     if (!match) return;
     // Will never be the case but typescript will act quirky if I dont include it

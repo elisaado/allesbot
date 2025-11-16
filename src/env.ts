@@ -4,6 +4,7 @@ const secretKeys = [
   "DISCORD_TOKEN",
   "LASTFM_API_KEY",
   "BEKEND_ROLE_ID",
+  "HOUSEMASTER_ID"
 ] as const;
 
 const env = await load({

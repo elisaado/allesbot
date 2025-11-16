@@ -38,7 +38,8 @@ export const getKarma: Command = {
   command: ".karma",
   description: "Get karma of something",
   showInHelp: true,
-  match: (message: Message) => message.content.split(" ")[0] === ".karma",
+  match: (message: Message) =>
+    message.content.split(" ")[0] === getKarma.command,
   execute: (message: Message): void => {
     const subject = message.content.split(" ").slice(1).join();
 

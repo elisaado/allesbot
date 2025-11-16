@@ -1,13 +1,10 @@
-import {
-  type Message,
-  TextChannel,
-} from "discord.js";
+import { type Message, TextChannel } from "discord.js";
 import { db } from "../db.ts";
 import { env } from "../env.ts";
 import type { Command } from "../types.ts";
 
 let todaysFipos: Message<boolean>[] = [];
-let recordedDate: string = "0-0-000";
+let recordedDate = "0-0-000";
 
 function getAsStringDateWithCorrectTimezoneForReal(date: Date): string {
   return date.toLocaleString("nl-NL", {
@@ -30,9 +27,9 @@ export const fipo: Command = {
   command: ".fipo",
   description: "do the fipo!",
   showInHelp: true,
-  match: (message: Message) => message.content === ".fipo",
+  match: (message: Message) =>
+    message.content === fipo.command && !message.author.bot,
   execute: (message: Message): void => {
-    if (message.author.bot) return;
     // check if we need to reset the fipo
     if (
       recordedDate !== getAsStringDateWithCorrectTimezoneForReal(new Date())
@@ -115,7 +112,7 @@ export const fipoStats: Command = {
   command: ".fipostats",
   description: "Check the fipo stats",
   showInHelp: true,
-  match: (message: Message) => message.content === ".fipostats",
+  match: (message: Message) => message.content === fipoStats.command,
   execute: async (message: Message): Promise<void> => {
     if (!message.guild) return;
 
@@ -177,7 +174,7 @@ export const fipoReset: Command = {
   command: ".fiporeset",
   description: "Reset the fipo stats",
   showInHelp: false,
-  match: (message: Message) => message.content === ".fiporeset",
+  match: (message: Message) => message.content === fipoReset.command,
   execute: (message: Message) => {
     if (message.author.id !== "783447871596920892") {
       message.reply("You are not allowed to do that!");
