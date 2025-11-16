@@ -1,34 +1,24 @@
 import type { Message } from "discord.js";
-import fs from "node:fs";
-import path from "node:path";
-import { type Command, CommandGuard } from "./customTypes.ts";
+import { type Command, commandGuard } from "./types.ts";
 
 const commands: Command[] = [];
 
-// Grabs all files in commands/slashCommands
-const commandsPath = path.join(
-  import.meta.dirname ?? "",
-  "commands",
-);
-const commandFiles = fs
-  .readdirSync(commandsPath)
-  .filter((file) => file.endsWith(".ts"));
+const commandFiles = Deno
+  .readDirSync("src/commands")
+  .filter((file) => file.name.endsWith(".ts"));
 
-for (const file of commandFiles) {
-  const filePath = path.join(commandsPath, file);
-  const module: object = await import(`file:///${filePath}`);
+for (const commandFile of commandFiles) {
+  const module = await import(`./commands/${commandFile.name}`) as object;
 
-  for (const entry of Object.entries(module)) {
-    if (CommandGuard(entry[1])) {
-      commands.push(entry[1] as Command);
+  for (const [name, command] of Object.entries(module)) {
+    if (!commandGuard(command)) {
+      console.warn(
+        `[WARNING] The export ${name} in module ${commandFile.name} doesn't really look like a command..`,
+      );
       continue;
     }
 
-    console.error(
-      `[WARNING] The export ${
-        entry[0]
-      } module at ${filePath} doesn't really look like a command..`,
-    );
+    commands.push(command as Command);
   }
 }
 

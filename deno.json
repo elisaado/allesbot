@@ -13,9 +13,7 @@
 
     "@db/sqlite": "jsr:@db/sqlite@^0.12.0",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
-    "discord.js": "npm:discord.js@^14.24.2",
-    "fs": "npm:fs@^0.0.1-security",
-    "path": "npm:path@^0.12.7"
+    "discord.js": "npm:discord.js@^14.24.2"
   },
   "lint": {
     "rules": {

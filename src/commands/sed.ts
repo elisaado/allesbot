@@ -1,16 +1,13 @@
 import type { Message } from "discord.js";
 import { client } from "../client.ts";
-import type { Command } from "../customTypes.ts";
+import type { Command } from "../types.ts";
 
 export const sed: Command = {
   name: "sed",
   command: /^`?\.s`?\/`?((?:\\.|[^\/])*)\/((?:\\.|[^\/])*?)(\/(.*?))?`?$/,
   description: "Use sed to replace text in the replied to message",
   showInHelp: true,
-  match: (message: Message) =>
-    Boolean(message.content.match(
-      /^`?\.s`?\/`?((?:\\.|[^\/])*)\/((?:\\.|[^\/])*?)(\/(.*?))?`?$/,
-    )),
+  match: (message: Message) => Boolean(message.content.match(sed.command)),
   execute: (message: Message): void => {
     if (
       !(message.reference && message.reference.messageId)

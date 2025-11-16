@@ -1,6 +1,6 @@
 import type { Message } from "discord.js";
-import type { Command } from "../customTypes.ts";
 import { db } from "../db.ts";
+import type { Command } from "../types.ts";
 
 const specialKarmaValues: [string | RegExp, number][] = [
   [/alles( )?bot/, 9999999],
@@ -14,7 +14,7 @@ function getKarmaFunc(subject: string): number {
   for (const specialKarmaValue of specialKarmaValues) {
     if (
       (
-        typeof specialKarmaValue[0] === "function" // typeof RegExp => "function"
+        typeof specialKarmaValue[0] === typeof RegExp
         && subject.match(specialKarmaValue[0])
       )
       || (
@@ -24,17 +24,13 @@ function getKarmaFunc(subject: string): number {
     ) return specialKarmaValue[1];
   }
 
-  const thing: { karma: number } = db.prepare(
-    "SELECT karma FROM karma WHERE subject= ?",
-  ).get(subject) ?? { karma: 0 };
-  return thing.karma;
+  return (db.sql`SELECT karma FROM karma WHERE subject = ${subject}` as {
+    karma?: number;
+  }).karma ?? 0;
 }
 
 function setKarmaFunc(subject: string, newKarma: number): void {
-  db.prepare("INSERT OR REPLACE INTO karma (subject, karma) VALUES (?, ?)").get(
-    subject,
-    String(newKarma),
-  );
+  db.sql`INSERT OR REPLACE INTO karma (subject, karma) VALUES (${subject}, ${newKarma})`;
 }
 
 export const getKarma: Command = {

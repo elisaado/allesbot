@@ -6,12 +6,10 @@ const db: Database = new Database(
   new URL("./daataabaasaa.db", basePath),
 );
 
-const closeListener = (): void => {
+addSigListener(() => {
   console.log("Closing DB");
   db.close();
-};
-
-addSigListener(closeListener);
+});
 
 db.sql`
         CREATE TABLE IF NOT EXISTS users (

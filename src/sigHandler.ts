@@ -1,4 +1,4 @@
-import type { MaybePromiseVoid } from "./customTypes.ts";
+import type { MaybePromiseVoid } from "./types.ts";
 
 let handlers: (() => MaybePromiseVoid)[] = [];
 

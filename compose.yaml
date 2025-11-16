@@ -4,6 +4,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - ./db:/app/db
+    env_file: .env
     develop:
       watch:
         - action: rebuild

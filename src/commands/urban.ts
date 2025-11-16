@@ -1,9 +1,22 @@
 import { EmbedBuilder, type Message } from "discord.js";
-import type {
-  Command,
-  UrbanDictionaryEntry,
-  UrbanDictionaryResponse,
-} from "../customTypes.ts";
+import type { Command } from "../types.ts";
+
+export type UrbanDictionaryEntry = {
+  author: string;
+  current_vote: string;
+  defid: number;
+  definition: string;
+  example: string;
+  permalink: string;
+  thumbs_down: number;
+  thumbs_up: number;
+  word: string;
+  written_on: string;
+};
+
+export type UrbanDictionaryResponse = {
+  list: UrbanDictionaryEntry[];
+};
 
 export const urban: Command = {
   name: "Urban Dictionary",

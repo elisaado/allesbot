@@ -1,28 +1,24 @@
-import fs from "node:fs";
-import path from "node:path";
 import { client } from "./client.ts";
-import { type BotEvent, BotEventGuard } from "./customTypes.ts";
 import { env } from "./env.ts";
+import { type BotEvent, botEventGuard } from "./types.ts";
 
-const eventsPath = path.join(import.meta.dirname ?? "", "events");
-const eventFiles = fs
-  .readdirSync(eventsPath)
-  .filter((file) => file.endsWith(".ts"));
+const eventFiles = Deno
+  .readDirSync("src/events")
+  .filter((file) => file.name.endsWith(".ts"));
 
-for (const file of eventFiles) {
-  const filePath = path.join(eventsPath, file);
-  const module: object = await import(`file:///${filePath}`);
+for (const eventFile of eventFiles) {
+  const module = await import(`./events/${eventFile.name}`) as object;
 
-  for (const entry of Object.entries(module)) {
-    if (!BotEventGuard(entry[1])) {
-      console.error(
-        `[WARNING] The module at ${filePath} is doesn't really look like an event..`,
+  for (let [name, event] of Object.entries(module)) {
+    if (!botEventGuard(event)) {
+      console.warn(
+        `[WARNING] The export ${name} in module ${eventFile.name} doesn't really look like a command..`,
       );
 
       continue;
     }
 
-    const event = entry[1] as BotEvent;
+    event = event as BotEvent;
 
     if (event.once) {
       client.once(event.type as string, (...args) => event.execute(...args));

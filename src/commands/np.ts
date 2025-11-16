@@ -1,12 +1,54 @@
 import { EmbedBuilder, type Message } from "discord.js";
-import type {
-  Command,
-  LastFMData,
-  LastFMTrack,
-  Track,
-} from "../customTypes.ts";
 import { db } from "../db.ts";
 import { env } from "../env.ts";
+import type { Command } from "../types.ts";
+
+export type Track = {
+  name: string;
+  album: string;
+  artist: string;
+  image: string;
+  url: string;
+};
+
+export type LastFMTrack = {
+  artist: {
+    mbid: string;
+    "#text": string;
+  };
+  streamable: string;
+  image: {
+    size: string;
+    "#text": string;
+  }[];
+  mbid: string;
+  album: {
+    mbid: string;
+    "#text": string;
+  };
+  name: string;
+  url: string;
+  date?: {
+    uts: string;
+    "@attr": string;
+  };
+  "@attr"?: {
+    nowplaying: boolean;
+  };
+};
+
+export type LastFMData = {
+  recenttracks: {
+    track: LastFMTrack[];
+    "@attr": {
+      user: string;
+      totalPages: string;
+      page: string;
+      perPage: string;
+      total: string;
+    };
+  };
+};
 
 export const np: Command = {
   name: "np",

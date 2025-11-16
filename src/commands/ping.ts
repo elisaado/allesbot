@@ -1,5 +1,5 @@
 import { type Message, TextChannel } from "discord.js";
-import type { Command } from "../customTypes.ts";
+import type { Command } from "../types.ts";
 
 export const ping: Command = {
   name: "ping",

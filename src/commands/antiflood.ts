@@ -1,6 +1,6 @@
 import type { Message } from "discord.js";
 import { client } from "../client.ts";
-import type { Command } from "../customTypes.ts";
+import type { Command } from "../types.ts";
 
 export type BucketContent = {
   lastTS: number;

@@ -1,17 +1,12 @@
 import { load } from "@std/dotenv";
 
-type Thing =
-  | "DISCORD_TOKEN"
-  | "LASTFM_API_KEY"
-  | "BEKEND_ROLE_ID";
-
-const secretKeys: Thing[] = [
+const secretKeys = [
   "DISCORD_TOKEN",
   "LASTFM_API_KEY",
   "BEKEND_ROLE_ID",
 ] as const;
 
-const env: Record<Thing, string> = await load({
+const env = await load({
   export: true,
 });
 

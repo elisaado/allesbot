@@ -1,13 +1,10 @@
 import {
-  type Collection,
-  type GuildMember,
   type Message,
   TextChannel,
 } from "discord.js";
-import type { Command } from "../customTypes.ts";
 import { db } from "../db.ts";
 import { env } from "../env.ts";
-import { biggestStringSize, sortRecord } from "../utils.ts";
+import type { Command } from "../types.ts";
 
 let todaysFipos: Message<boolean>[] = [];
 let recordedDate: string = "0-0-000";
@@ -134,31 +131,38 @@ export const fipoStats: Command = {
       });
     }
 
-    const userLookUp: Record<string, string> = {};
-    const guildMembers: Collection<string, GuildMember> = await message.guild
-      .members
-      .fetch();
-    for (const guildMember of guildMembers) {
-      userLookUp[guildMember[1].id] = guildMember[1].displayName;
+    const fipo: { discord_id: string; fipos: number }[] = db.sql`
+          SELECT DISTINCT(discord_id), COUNT(*) as fipos
+          FROM fipos
+          GROUP BY discord_id
+          ORDER BY fipos DESC
+          LIMIT 50
+        `;
+
+    const members = await message.guild.members.fetch({
+      user: fipo.map((e) => e.discord_id),
+    });
+
+    const fipoStats: [string, number][] = [];
+    for (const { discord_id, fipos } of fipo) {
+      const displayName = members.get(discord_id)?.displayName;
+      if (!displayName) continue;
+      fipoStats.push([displayName, fipos]);
     }
 
-    // string is username, number is amount of fipuntjes
-    let fipoStats: Record<string, number> = {};
+    const longestUsername = fipoStats.reduce(
+      (acc, [displayName]) => Math.max(acc, displayName.length),
+      0,
+    );
 
-    for (const fipoEntry of fipoEntries) {
-      const currentMember = userLookUp[fipoEntry.discord_id];
-      if (typeof fipoStats[currentMember] !== "number") {
-        fipoStats[currentMember] = 0;
-      }
-
-      fipoStats[currentMember]++;
+    let returnMessage: string = "# fipostats\n```\n";
+    for (const [displayName, fipos] of fipoStats) {
+      returnMessage += `${displayName}${
+        " ".repeat(longestUsername + 4 - displayName.length)
+      }: ${fipos}\n`;
     }
+    message.reply(returnMessage + "```");
 
-    fipoStats = sortRecord(fipoStats);
-
-    const longestUsername = biggestStringSize(fipoStats);
-
-    let returnMessage = "# fipostats\n```\n";
     for (const fipoStat of Object.entries(fipoStats)) {
       returnMessage += fipoStat[0]
         + " ".repeat(longestUsername + 4 - fipoStat[0].length) + ": "
