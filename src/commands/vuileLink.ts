@@ -101,8 +101,6 @@ let badKeys = [
   "campaign_name",
   "campid",
   "catablog-gallery",
-  "channel",
-  "checksum",
   "ck_subscriber_id",
   "cmplz_region_redirect",
   "cmpnid",
