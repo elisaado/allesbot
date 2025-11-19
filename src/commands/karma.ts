@@ -9,59 +9,46 @@ const specialKarmaValues: [string | RegExp, number][] = [
   ["SEKS :bangbang:", 9999997],
 ];
 
-function getKarmaFunc(subject: string): number {
+function getKarma(subject: string): number {
   subject = subject.toLowerCase();
   for (const [specialSubject, specialKarma] of specialKarmaValues) {
     if (
-      (
-        typeof specialSubject === typeof RegExp
-        && subject.match(specialSubject)
-      )
-      || (
-        typeof specialSubject === "string"
-        && subject === specialSubject
-      )
+      (typeof specialSubject === typeof RegExp && subject.match(specialSubject)) ||
+      (typeof specialSubject === "string" && subject === specialSubject)
     ) return specialKarma;
   }
 
-  return (db.sql`SELECT karma FROM karma WHERE subject = ${subject}` as {
-    karma?: number;
-  }).karma ?? 0;
+  return (db.sql`SELECT karma FROM karma WHERE subject = ${subject}` as { karma?: number; }).karma ?? 0;
 }
 
-function setKarmaFunc(subject: string, newKarma: number): void {
+function setKarma(subject: string, newKarma: number): void {
   db.sql`INSERT OR REPLACE INTO karma (subject, karma) VALUES (${subject}, ${newKarma})`;
 }
 
-export const getKarma: Command = {
+export const getKarmaCommand: Command = {
   name: "getKarma",
-  command: ".karma",
+  command: "karma",
   description: "Get karma of something",
   showInHelp: true,
-  match: (message: Message) =>
-    message.content.split(" ")[0] === getKarma.command,
-  execute: (message: Message): void => {
+  execute: async (message: Message) => {
     const subject = message.content.split(" ").slice(1).join();
-
-    message.reply(`${subject} has **${getKarmaFunc(subject)} karma**`);
+    await message.reply(`${subject} has **${getKarma(subject)} karma**`);
   },
 };
 
-export const setKarma: Command = {
+export const setKarmaCommand: Command = {
   name: "setKarma",
-  command: /^(.+)((\+\+)|(\-\-))$/,
+  command: /.*(\+\+|--)$/g,
   description: "Increase or decrease the karma of something",
   showInHelp: true,
-  match: (message: Message) =>
+  match: (message) =>
     message.content.endsWith("--") || message.content.endsWith("++"),
-  execute: (message: Message): void => {
-    const subject = message.content.substring(0, message.content.length - 2)
+  execute: async (message: Message) => {
+    const subject = message.content
+      .substring(0, message.content.length - 2)
       .trim();
-
-    const curKarma = getKarmaFunc(subject);
-
-    setKarmaFunc(subject, curKarma + (message.content.endsWith("++") ? 1 : -1));
-
-    message.reply(`${subject} now has **${getKarmaFunc(subject)} karma**`);
+    const oldKarma = getKarma(subject);
+    setKarma(subject, oldKarma + (message.content.endsWith("++") ? 1 : -1));
+    await message.reply(`${subject} now has **${getKarma(subject)} karma**`);
   },
 };

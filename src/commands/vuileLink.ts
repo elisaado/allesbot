@@ -11,9 +11,9 @@ export const vuileLink: Command = {
   description: "maakt links schoon (geen commando)",
   showInHelp: false,
   match: (message: Message) =>
-    Boolean(message.content.match(vuileLink.command))
-    && message.author.id !== client.user?.id,
-  execute: (message: Message): void => {
+    Boolean(message.content.match(vuileLink.command)) &&
+    message.author.id !== client.user?.id,
+  execute: async (message: Message): Promise<void> => {
     const urlInMessage = message.content.match(
       /(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/i,
     )?.[0];
@@ -34,7 +34,7 @@ export const vuileLink: Command = {
     for (const badKey of toDelete) parsedUrl.searchParams.delete(badKey);
 
     const cleanURL = parsedUrl.toString();
-    message.reply(
+    await message.reply(
       `jij bent VIES en je stomme linkje ook! Hier is een schone versie: ${cleanURL}`,
     );
   },

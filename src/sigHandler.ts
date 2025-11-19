@@ -7,7 +7,7 @@ export const addSigListener = (fun: () => MaybePromiseVoid): void => {
 };
 
 export const removeSigListener = (fun: () => MaybePromiseVoid): void => {
-  handlers = handlers.filter((v) => v === fun);
+  handlers = handlers.filter((v) => v !== fun);
 };
 
 const sigHandler = async () => {

@@ -3,14 +3,14 @@ import type { Command } from "../types.ts";
 
 export const ping: Command = {
   name: "ping",
-  command: ".ping",
+  command: "ping",
   description: "Replies with pong and the latency",
   showInHelp: true,
   match: (message: Message) => message.content === ping.command,
-  execute: (message: Message): void => {
+  execute: async (message: Message) => {
     const diff = Date.now() - message.createdTimestamp;
 
-    message.reply(`Pong! Latency: ${diff}ms`);
+    await message.reply(`Pong! Latency: ${diff}ms`);
   },
 };
 
@@ -20,10 +20,10 @@ export const editPing: Command = {
   description: "Measures the latency by editing the message",
   showInHelp: true,
   match: (message: Message) => Boolean(message.content.match(editPing.command)),
-  execute: (message: Message): void => {
+  execute: async (message: Message) => {
     if (!(message.channel instanceof TextChannel)) return;
 
-    message.channel.send("Pinging...").then((sent) => {
+    await message.channel.send("Pinging...").then((sent) => {
       const diff = Date.now() - sent.createdTimestamp;
 
       sent.edit(`Pong! Latency: ${diff}ms`);

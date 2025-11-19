@@ -1,6 +1,6 @@
 import { type Message, TextChannel } from "discord.js";
 import { db } from "../db.ts";
-import { env } from "../env.ts";
+import env from "../env.ts";
 import type { Command } from "../types.ts";
 
 let todaysFipos: Message<boolean>[] = [];
@@ -24,34 +24,26 @@ function getDayOfDateWithCorrectTimezoneForReal(date: Date): string {
 
 export const fipo: Command = {
   name: "fipo",
-  command: ".fipo",
+  command: "fipo",
   description: "do the fipo!",
   showInHelp: true,
-  match: (message: Message) =>
-    message.content === fipo.command && !message.author.bot,
-  execute: (message: Message): void => {
+  match: (message: Message) => !message.author.bot,
+  execute: (message: Message) => {
     // check if we need to reset the fipo
-    if (
-      recordedDate !== getAsStringDateWithCorrectTimezoneForReal(new Date())
-    ) {
-      recordedDate = getAsStringDateWithCorrectTimezoneForReal(new Date());
-
+    const currentDate = getAsStringDateWithCorrectTimezoneForReal(new Date());
+    if (recordedDate !== currentDate) {
+      recordedDate = currentDate;
       todaysFipos = [];
     }
 
     todaysFipos.push(message);
-
-    if (todaysFipos.length > 1) {
-      // setTimeout already running or fipo already done, no need to start it
-      console.log({ fipoAlreadyRunning: true });
-      console.log({ todaysFipos });
-      return;
-    }
+    // setTimeout already running or fipo already done, no need to start it
+    if (todaysFipos.length > 1) return;
 
     // wait 1 second to allow more fipos to come in, then grab the earliest one
-    setTimeout(() => {
-      const fipo: Message<boolean> = todaysFipos
-        .filter((a: Message<boolean>) => {
+    setTimeout(async () => {
+      const fipo = todaysFipos
+        .filter((a) => {
           return (
             getDayOfDateWithCorrectTimezoneForReal(
               new Date(a.createdTimestamp),
@@ -74,12 +66,9 @@ export const fipo: Command = {
 
       // the array is still needed though, to not start a lot of timeouts
 
-      const alreadyDone = db
-        .sql`SELECT * FROM fipos WHERE date = ${
-        getAsStringDateWithCorrectTimezoneForReal(
-          new Date(fipo.createdTimestamp),
-        )
-      }`;
+      const alreadyDone = db.sql`SELECT * FROM fipos WHERE date = ${getAsStringDateWithCorrectTimezoneForReal(
+        new Date(fipo.createdTimestamp),
+      )}`;
 
       if (alreadyDone) {
         console.log({ fipoAlreadyDone: alreadyDone });
@@ -87,54 +76,40 @@ export const fipo: Command = {
       }
 
       if (
-        !(message.channel instanceof TextChannel)
-        || message.channel.id !== env.BEKEND_ROLE_ID
+        !(message.channel instanceof TextChannel) ||
+        message.channel.id !== env.FIPO_CHANNEL_ID
       ) {
-        message.reply(
-          "je kan alleen fipo doen in <#789249810032361508> makker",
+        await message.reply(
+          `je kan alleen fipo doen in <#${env.FIPO_CHANNEL_ID}> makker`,
         );
         return;
       }
 
-      message.channel.send("W00t " + fipo.author.toString() + "!");
+      await message.channel.send("W00t " + fipo.author.toString() + "!");
 
-      db.sql`INSERT INTO fipos (discord_id, date) VALUES (${fipo.author.id}, ${
-        getAsStringDateWithCorrectTimezoneForReal(
-          new Date(fipo.createdTimestamp),
-        )
-      })`;
+      db.sql`INSERT INTO fipos (discord_id, date) VALUES (${fipo.author.id}, ${getAsStringDateWithCorrectTimezoneForReal(
+        new Date(fipo.createdTimestamp),
+      )})`;
     }, 1000);
   },
 };
 
 export const fipoStats: Command = {
   name: "fipostats",
-  command: ".fipostats",
+  command: "fipostats",
   description: "Check the fipo stats",
   showInHelp: true,
   match: (message: Message) => message.content === fipoStats.command,
-  execute: async (message: Message): Promise<void> => {
+  execute: async (message: Message) => {
     if (!message.guild) return;
 
-    const rawFipoEntries: Record<string, number | string>[] = db.sql`
-      SELECT * FROM fipos`;
-
-    const fipoEntries: { discord_id: string; date: string }[] = [];
-
-    for (const rawFipoEntry of rawFipoEntries) {
-      fipoEntries.push({
-        discord_id: String(rawFipoEntry.discord_id),
-        date: String(rawFipoEntry.date),
-      });
-    }
-
-    const fipo: { discord_id: string; fipos: number }[] = db.sql`
+    const fipo = db.sql`
           SELECT DISTINCT(discord_id), COUNT(*) as fipos
           FROM fipos
           GROUP BY discord_id
           ORDER BY fipos DESC
           LIMIT 50
-        `;
+        ` as { discord_id: string; fipos: number }[];
 
     const members = await message.guild.members.fetch({
       user: fipo.map((e) => e.discord_id),
@@ -154,16 +129,9 @@ export const fipoStats: Command = {
 
     let returnMessage: string = "# fipostats\n```\n";
     for (const [displayName, fipos] of fipoStats) {
-      returnMessage += `${displayName}${
-        " ".repeat(longestUsername + 4 - displayName.length)
-      }: ${fipos}\n`;
-    }
-    message.reply(returnMessage + "```");
-
-    for (const fipoStat of Object.entries(fipoStats)) {
-      returnMessage += fipoStat[0]
-        + " ".repeat(longestUsername + 4 - fipoStat[0].length) + ": "
-        + fipoStat[1] + "\n";
+      returnMessage += `${displayName}${" ".repeat(
+        longestUsername + 4 - displayName.length,
+      )}: ${fipos}\n`;
     }
     message.reply(returnMessage + "```");
   },
@@ -171,13 +139,13 @@ export const fipoStats: Command = {
 
 export const fipoReset: Command = {
   name: "Fipo Reset",
-  command: ".fiporeset",
+  command: "fiporeset",
   description: "Reset the fipo stats",
   showInHelp: false,
   match: (message: Message) => message.content === fipoReset.command,
-  execute: (message: Message) => {
+  execute: async (message: Message) => {
     if (message.author.id !== env.HOUSEMASTER_ID) {
-      message.reply("You are not allowed to do that!");
+      await message.reply("You are not allowed to do that!");
       return;
     }
 
@@ -187,7 +155,7 @@ export const fipoReset: Command = {
       todaysFipos = [];
       recordedDate = "0";
 
-      message.reply("Fipo stats reset!");
+      await message.reply("Fipo stats reset!");
     } catch (err) {
       console.error(err);
       return;

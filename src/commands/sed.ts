@@ -8,14 +8,13 @@ export const sed: Command = {
   description: "Use sed to replace text in the replied to message",
   showInHelp: true,
   match: (message: Message) => Boolean(message.content.match(sed.command)),
-  execute: (message: Message): void => {
-    if (
-      !(message.reference && message.reference.messageId)
-    ) {
-      message.reply("je moet een message replyen om dit te kunnen doen gekkie");
+  execute: async (message: Message) => {
+    if (!(message.reference && message.reference.messageId)) {
+      await message.reply(
+        "je moet een message replyen om dit te kunnen doen gekkie",
+      );
       return;
     }
-
     const match = message.content.match(sed.command);
 
     if (!match) return;
@@ -26,22 +25,23 @@ export const sed: Command = {
 
     if (options) {
       if (options.match(/[^gmi]/)) {
-        message.reply("Duplicate regex options");
+        await message.reply("Duplicate regex options");
+        return;
       }
 
       const splitted = options.split("");
       if (new Set(splitted).size !== splitted.length) {
-        message.reply("Invalid regex options");
+        await message.reply("Invalid regex options");
+        return;
       }
     }
 
-    const replyMessage = message.channel.messages
-      .cache.get(
-        message.reference.messageId,
-      );
+    const replyMessage = message.channel.messages.cache.get(
+      message.reference.messageId,
+    );
 
     if (!replyMessage) {
-      message.reply(
+      await message.reply(
         "er ging iets mis tijdens het zoeken van de message waarop je reageerde, sorry",
       );
       return;
@@ -49,19 +49,18 @@ export const sed: Command = {
 
     if (replyMessage.author.id === client.user?.id) return;
 
-    const oldContent = replyMessage.content
-      || replyMessage.embeds?.[0]?.description
-      || "";
+    const oldContent =
+      replyMessage.content || replyMessage.embeds?.[0]?.description || "";
     const newContent = oldContent.replace(
       new RegExp(find, options ?? "g"),
       replace.replace(/\\(.)/g, "$1"),
     );
     if (newContent.length > 1000) {
-      message.reply("Resulting message is te lang aapje");
+      await message.reply("Resulting message is te lang aapje");
       return;
     }
 
-    replyMessage.reply({
+    await replyMessage.reply({
       allowedMentions: { repliedUser: false },
       content: `Did you mean:\n${newContent}`,
     });

@@ -1,16 +1,16 @@
 import { client } from "./client.ts";
-import { env } from "./env.ts";
-import { type BotEvent, botEventGuard } from "./types.ts";
+import env from "./env.ts";
+import { type BotEvent, isBotEvent } from "./types.ts";
 
-const eventFiles = Deno
-  .readDirSync("src/events")
-  .filter((file) => file.name.endsWith(".ts"));
+const eventFiles = Deno.readDirSync("src/events").filter((file) =>
+  file.name.endsWith(".ts"),
+);
 
 for (const eventFile of eventFiles) {
-  const module = await import(`./events/${eventFile.name}`) as object;
+  const module = (await import(`./events/${eventFile.name}`)) as object;
 
   for (const [name, entry] of Object.entries(module)) {
-    if (!botEventGuard(entry)) {
+    if (!isBotEvent(entry)) {
       console.warn(
         `[WARNING] The export ${name} in module ${eventFile.name} doesn't really look like an event..`,
       );

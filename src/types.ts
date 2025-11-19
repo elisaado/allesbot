@@ -5,11 +5,11 @@ export type Command = {
   command: string | RegExp;
   description: string;
   showInHelp: boolean;
-  match: (message: Message) => boolean;
+  match?: (message: Message) => boolean;
   execute: (message: Message) => MaybePromiseVoid;
 };
 
-export const commandGuard = (object: object) =>
+export const isCommand = (object: object) =>
   "match" in object && "execute" in object;
 
 export type BotEvent = {
@@ -20,7 +20,7 @@ export type BotEvent = {
   // These types and parameters differ wildly, I also don't want to use any but I have no choice
 };
 
-export const botEventGuard = (object: object) =>
+export const isBotEvent = (object: object) =>
   "type" in object && "execute" in object;
 
 export type MaybePromiseVoid = void | Promise<void>;

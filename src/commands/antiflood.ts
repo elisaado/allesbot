@@ -18,7 +18,7 @@ export const antiflood: Command = {
   showInHelp: false,
   match: (message: Message) =>
     !(message.author.id === client.user?.id || message.author.bot),
-  execute: (message: Message): void => {
+  execute: async (message: Message) => {
     const now = new Date().valueOf();
     let bucket = buckets[message.author.id];
 
@@ -39,11 +39,11 @@ export const antiflood: Command = {
 
     // time out user
     if (bucket.count > maxBucketSize) {
-      const guildmember = message.mentions.members?.first()
+      const member = message.mentions.members?.first()
         ? message.mentions.members.first()
         : message.guild?.members.cache.get(message.author.id);
 
-      if (!guildmember) {
+      if (!member) {
         console.log(
           "user is not a guild member somehow?!",
           message.author.globalName,
@@ -51,10 +51,10 @@ export const antiflood: Command = {
         );
         return;
       }
-      guildmember
+      await member
         .timeout(60 * 1000, "rustig aan aap mannetje")
-        .catch((e) => {
-          console.log("user timeouten ging fout, wrm?", e, { guildmember });
+        .catch((err) => {
+          console.log("user timeouten ging fout, wrm?", err, { member });
         });
     }
 

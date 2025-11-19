@@ -3,8 +3,8 @@
   "tasks": {
     "dev": "deno run -A src/index.ts",
     "dev-watch": "deno run -A --watch src/index.ts",
-    "dev-db": "rm daataabaasaa.db; deno run -A src/db.ts; deno run dev",
-    "dev-db-watch": "rm daataabaasaa.db; deno run -A src/db.ts; deno run dev-watch"
+    "dev-db": "rm db/db.db; deno run -A src/db.ts; deno run dev",
+    "dev-db-watch": "rm db/db.db; deno run -A src/db.ts; deno run dev-watch"
   },
   "imports": {
     "$src/": "./src/",
@@ -22,17 +22,12 @@
       "include": [
         "camelCase",
         "eqeqeq",
-        "explicit-function-return-type",
         "no-const-reassign",
         "no-eval"
+      ],
+      "exclude": [
+        "no-extra-non-null-assertion"
       ]
     }
-  },
-  "fmt": {
-    "bracePosition": "sameLine",
-    "singleQuote": false,
-    "semiColons": true,
-    "operatorPosition": "nextLine",
-    "useBraces": "whenNotSingleLine"
   }
 }
