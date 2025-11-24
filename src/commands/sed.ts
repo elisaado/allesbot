@@ -24,13 +24,13 @@ registerCommand({
       return;
     }
     if (options) {
-      if (options.match(/[^gmi]/)) {
-        return message.reply("Duplicate regex options");
+      if (options.match(/[^gmidsuvy]/)) {
+        return message.reply("Invalid regex options");
       }
 
       const splitted = options.split("");
       if (new Set(splitted).size !== splitted.length) {
-        return message.reply("Invalid regex options");
+        return message.reply("Duplicate regex options");
       }
     }
     const reply = message.channel.messages.cache.get(
