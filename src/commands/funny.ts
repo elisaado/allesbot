@@ -24,7 +24,7 @@ registerCommand({
 
 registerCommand({
   name: "yucky",
-  command: /^(my favorite game)|(erase and rewind)$/i,
+  command: /(my favorite game)|(erase and rewind)/i,
   description: "grappig (geen commando)",
   showInHelp: false,
   handle: async (message, args) => {
@@ -45,7 +45,7 @@ registerCommand({
 
 registerCommand({
   name: "yucky",
-  command: /^(the pretender)$/i,
+  command: /(the pretender)/i,
   description: "grappig (geen commando)",
   showInHelp: false,
   handle: async (message, args) => {
@@ -65,7 +65,7 @@ registerCommand({
 registerCommand({
   name: "yucky",
   command:
-    /^(lonely boy)|(tighten up)|(gold on the ceiling)|(little black submarines)|(fever)|(weight of love)$/i,
+    /(lonely boy)|(tighten up)|(gold on the ceiling)|(little black submarines)|(fever)|(weight of love)/i,
   description: "grappig (geen commando)",
   showInHelp: false,
   handle: async (message, args) => {
