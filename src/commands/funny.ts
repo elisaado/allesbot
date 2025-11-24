@@ -20,3 +20,59 @@ registerCommand({
     message.reply("maak een pr dan :) <https://github.com/elisaado/allesbot>");
   },
 });
+
+registerCommand({
+  name: "yucky",
+  command: /^(my favorite game)|(erase and rewind)$/i,
+  description: "grappig (geen commando)",
+  showInHelp: false,
+  handle: async (message, args) => {
+    let match = message.content.match(
+      /^(my favorite game)|(erase and rewind)$/i,
+    )?.[1];
+    let artist = "The Cardigans";
+    const replies = [
+      `${match}??? is dit een ${artist} reference???`,
+      `yoooo, ${match}!!! dat is ook een liedje van ${artist}`,
+      `wow ${match} die is echt hard (van ${artist})`,
+    ];
+    message.reply(replies[Math.floor(Math.random() * replies.length)]!);
+  },
+});
+
+registerCommand({
+  name: "yucky",
+  command: /^(the pretender)$/i,
+  description: "grappig (geen commando)",
+  showInHelp: false,
+  handle: async (message, args) => {
+    let match = message.content.match(/^(the pretender)$/i)?.[1];
+    let artist = "Foo fighters";
+    const replies = [
+      `${match}??? is dit een ${artist} reference???`,
+      `yoooo, ${match}!!! dat is ook een liedje van ${artist}`,
+      `wow ${match} die is echt hard (van ${artist})`,
+    ];
+    message.reply(replies[Math.floor(Math.random() * replies.length)]!);
+  },
+});
+
+registerCommand({
+  name: "yucky",
+  command:
+    /^(lonely boy)|(tighten up)|(gold on the ceiling)|(little black submarines)|(fever)|(weight of love)$/i,
+  description: "grappig (geen commando)",
+  showInHelp: false,
+  handle: async (message, args) => {
+    let match = message.content.match(
+      /^(lonely boy)|(tighten up)|(gold on the ceiling)|(little black submarines)|(fever)|(weight of love)$/i,
+    )?.[1];
+    let artist = "The Black Keys";
+    const replies = [
+      `${match}??? is dit een ${artist} reference???`,
+      `yoooo, ${match}!!! dat is ook een liedje van ${artist}`,
+      `wow ${match} die is echt hard (van ${artist})`,
+    ];
+    message.reply(replies[Math.floor(Math.random() * replies.length)]!);
+  },
+});
