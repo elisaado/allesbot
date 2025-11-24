@@ -1,4 +1,5 @@
 import { registerCommand } from "../commandHandler.js";
+import client from "../index.js";
 
 registerCommand({
   name: "funny",
@@ -27,6 +28,8 @@ registerCommand({
   description: "grappig (geen commando)",
   showInHelp: false,
   handle: async (message, args) => {
+    if (message.author.id === client.user?.id) return;
+
     let match = message.content.match(
       /^(my favorite game)|(erase and rewind)$/i,
     )?.[0];
@@ -46,6 +49,8 @@ registerCommand({
   description: "grappig (geen commando)",
   showInHelp: false,
   handle: async (message, args) => {
+    if (message.author.id === client.user?.id) return;
+
     let match = message.content.match(/^(the pretender)$/i)?.[0];
     let artist = "Foo fighters";
     const replies = [
@@ -64,6 +69,8 @@ registerCommand({
   description: "grappig (geen commando)",
   showInHelp: false,
   handle: async (message, args) => {
+    if (message.author.id === client.user?.id) return;
+
     let match = message.content.match(
       /^(lonely boy)|(tighten up)|(gold on the ceiling)|(little black submarines)|(fever)|(weight of love)$/i,
     )?.[0];
