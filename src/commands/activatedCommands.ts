@@ -8,3 +8,4 @@ import "./urban.js";
 import "./pin.js";
 import "./vuileLink.js";
 import "./antiflood.js";
+import "./yearprogress.js";
