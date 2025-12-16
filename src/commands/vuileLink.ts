@@ -197,6 +197,7 @@ let badKeys = [
   "ict",
   "ie",
   "igshid",
+  "igsh",
   "im",
   "ipl",
   "jw_start",
