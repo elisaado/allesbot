@@ -12,15 +12,11 @@ export const removeSigListener = (fun: () => MaybePromiseVoid): void => {
 
 const sigHandler = async () => {
   console.log("Shutting down...");
-  for (const handler of handlers) {
-    await handler();
-  }
+  for (const handler of handlers) await handler();
 
   Deno.exit();
 };
 
-if (Deno.build.os !== "windows") {
-  Deno.addSignalListener("SIGTERM", sigHandler);
-}
+if (Deno.build.os !== "windows") Deno.addSignalListener("SIGTERM", sigHandler);
 // Windows momentje
 Deno.addSignalListener("SIGINT", sigHandler);

@@ -3,8 +3,7 @@ import { db } from "../db.ts";
 import type { Command } from "../types.ts";
 
 const specialKarmaValues: [string | RegExp, number][] = [
-  [/alles( )?bot/, 9999999],
-  ["<@1269730382765621288>", 9999999],
+  [/(alles( )?bot)|(<@1269730382765621288>)/, 9999999],
   ["typst", 9999998],
   ["SEKS :bangbang:", 9999997],
 ];

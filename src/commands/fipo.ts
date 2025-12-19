@@ -127,7 +127,7 @@ export const fipoStats: Command = {
       0,
     );
 
-    let returnMessage: string = "# fipostats\n```\n";
+    let returnMessage = "# fipostats\n```\n";
     for (const [displayName, fipos] of fipoStats) {
       returnMessage += `${displayName}${" ".repeat(
         longestUsername + 4 - displayName.length,

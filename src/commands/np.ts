@@ -88,12 +88,7 @@ export const np: Command = {
     const lastFMData: LastFMData = await response.json();
     const recentlyPlayed: LastFMTrack[] = lastFMData.recenttracks.track;
 
-    if (
-      recentlyPlayed.length === 0 ||
-      !recentlyPlayed[0] ||
-      !recentlyPlayed[0]["@attr"] ||
-      !recentlyPlayed[0]["@attr"].nowplaying
-    ) {
+    if (!recentlyPlayed?.[0]?.["@attr"]?.nowplaying) {
       await message.reply("dan moet je wel muziek aan zetten jij zukkel");
       return;
     }

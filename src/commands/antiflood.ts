@@ -8,7 +8,7 @@ export type BucketContent = {
 };
 
 // leaky bucket implementation
-const maxBucketSize = 10;
+const maxBucketSize = 10 as const;
 const buckets: Record<string, BucketContent> = {};
 
 export const antiflood: Command = {

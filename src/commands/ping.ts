@@ -9,7 +9,6 @@ export const ping: Command = {
   match: (message: Message) => message.content === ping.command,
   execute: async (message: Message) => {
     const diff = Date.now() - message.createdTimestamp;
-
     await message.reply(`Pong! Latency: ${diff}ms`);
   },
 };
@@ -25,7 +24,6 @@ export const editPing: Command = {
 
     await message.channel.send("Pinging...").then((sent) => {
       const diff = Date.now() - sent.createdTimestamp;
-
       sent.edit(`Pong! Latency: ${diff}ms`);
     });
   },

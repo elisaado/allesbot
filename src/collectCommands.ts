@@ -32,10 +32,8 @@ commands.push({
   execute: async (message: Message) => {
     let returnMessage = "";
     for (const command of commands) {
-      if (command.showInHelp) {
-        // @ts-ignore deno-ts 2769
+      if (command.showInHelp)
         returnMessage += `**${command.name}** (\`\`${command.command.toString()}\`\`): ${command.description}\n`;
-      }
     }
     await message.reply(returnMessage);
   },
