@@ -23,6 +23,19 @@ registerCommand({
 });
 
 registerCommand({
+  name: "anti-scheld",
+  command: /kanker/i,
+  description: "grappig (geen commando)",
+  showInHelp: false,
+  handle: async (message, args) => {
+    // nie schelde met kanker
+    await message.member?.timeout(1 * 60 * 1000);
+
+    message.reply("nie schelden met kanker :(");
+  },
+});
+
+registerCommand({
   name: "yucky",
   command: /(my favorite game)|(erase and rewind)/i,
   description: "grappig (geen commando)",
