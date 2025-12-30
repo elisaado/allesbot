@@ -29,7 +29,7 @@ registerCommand({
   showInHelp: false,
   handle: async (message, args) => {
     // nie schelde met kanker
-    await message.member?.timeout(1 * 60 * 1000);
+    await message.member?.timeout(1 * 10 * 1000).catch(() => {});
 
     message.reply("nie schelden met kanker :(");
   },
