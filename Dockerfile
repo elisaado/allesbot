@@ -19,9 +19,11 @@ RUN adduser --system --uid 1001 --ingroup nodejs allesbot
 USER allesbot
 
 WORKDIR /app
-COPY --from=builder --chown=allesbot:nodejs /app/dist ./dist
+
 COPY --from=builder --chown=allesbot:nodejs /app/package*.json ./
+RUN npm install --omit dev
+
+COPY --from=builder --chown=allesbot:nodejs /app/dist ./dist
 VOLUME ["/app/db"]
 
-RUN npm install --omit dev
 CMD ["node", "dist/index.js"]
