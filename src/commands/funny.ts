@@ -28,6 +28,8 @@ registerCommand({
   description: "grappig (geen commando)",
   showInHelp: false,
   handle: async (message, args) => {
+    if (message.author.id === client.user?.id) return;
+
     // nie schelde met kanker
     await message.member?.timeout(1 * 10 * 1000).catch(() => {});
 
