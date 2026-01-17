@@ -437,7 +437,34 @@ registerCommand({
       }
     }
 
-    if (toDelete.length === 0) return;
+    // Domain replacements for better embeds/privacy
+    const domainReplacements: Record<string, string> = {
+      "instagram.com": "vxinstagram.com",
+      "www.instagram.com": "vxinstagram.com",
+      "x.com": "xcancel.com",
+      "www.x.com": "xcancel.com",
+      "twitter.com": "xcancel.com",
+      "www.twitter.com": "xcancel.com",
+      "bsky.app": "fxbsky.app",
+      "www.bsky.app": "fxbsky.app",
+      "tiktok.com": "vxtiktok.com",
+      "www.tiktok.com": "vxtiktok.com",
+      "reddit.com": "vxreddit.com",
+      "www.reddit.com": "vxreddit.com",
+      "youtube.com": "yewtu.be",
+      "www.youtube.com": "yewtu.be",
+      "m.youtube.com": "yewtu.be",
+    };
+
+    let hasChanges = toDelete.length > 0;
+
+    // Check if domain needs replacement
+    if (parsedUrl.hostname && domainReplacements[parsedUrl.hostname]) {
+      parsedUrl.hostname = domainReplacements[parsedUrl.hostname]!;
+      hasChanges = true;
+    }
+
+    if (!hasChanges) return;
 
     for (let badKey of toDelete) {
       parsedUrl.searchParams.delete(badKey);
