@@ -452,9 +452,9 @@ registerCommand({
       "reddit.com": "old.rxddit.com",
       "www.reddit.com": "old.rxddit.com",
       "old.reddit.com": "old.rxddit.com",
-      "youtube.com": "yewtu.be",
-      "www.youtube.com": "yewtu.be",
-      "m.youtube.com": "yewtu.be",
+      "youtube.com": "yewtube.argv.nl",
+      "www.youtube.com": "yewtube.argv.nl",
+      "m.youtube.com": "yewtube.argv.nl",
     };
 
     let hasChanges = toDelete.length > 0;
