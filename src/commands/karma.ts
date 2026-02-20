@@ -6,7 +6,7 @@ import type { Message } from "discord.js";
 const specialKarmaValues: [string | RegExp, number][] = [
   [/(alles( )?bot)|(<@1269730382765621288>)/, 9999999],
   ["typst", 9999998],
-  ["SEKS :bangbang:", 9999997],
+  [/SEKS( :bangbang:)?/, 9999997],
 ];
 
 function getKarma(subject: string): number {

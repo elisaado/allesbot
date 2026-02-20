@@ -10,16 +10,14 @@ export const yearprogress: Command = {
   match: (message: Message) =>
     message.content === env.PREFIX + yearprogress.command,
   execute: async (message: Message) => {
+    const millisPerDay = 86400000;
     const date = new Date();
     const start = Date.UTC(date.getFullYear(), 0, 0);
     const end = Date.UTC(date.getFullYear() + 1, 0, 0);
     const currentDay =
       (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - start) /
-      24 /
-      60 /
-      60 /
-      1000;
-    const maxDay = (end - start) / 24 / 60 / 60 / 1000;
+      millisPerDay;
+    const maxDay = (end - start) / millisPerDay;
 
     await message.reply(
       `We zijn al ysu **${((currentDay / maxDay) * 100).toFixed(1)}%** in het jaar`,

@@ -51,7 +51,7 @@ export const sed: Command = {
       return;
     }
 
-    if (replyMessage.author.id === client.user?.id) return;
+    if (replyMessage.author.id === client.user.id) return;
 
     const oldContent =
       replyMessage.content || replyMessage.embeds[0].description || "";

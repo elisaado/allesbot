@@ -12,7 +12,7 @@ export const vuileLink: Command = {
   showInHelp: false,
   match: (message: Message) =>
     Boolean(message.content.match(vuileLink.command)) &&
-    message.author.id !== client.user?.id,
+    message.author.id !== client.user.id,
   execute: async (message: Message) => {
     const urlInMessage = message.content.match(
       /(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/i,

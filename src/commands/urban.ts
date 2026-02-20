@@ -44,7 +44,7 @@ export const urban: Command = {
       return;
     }
 
-    const responseData: UrbanDictionaryResponse = await response.json();
+    const responseData = (await response.json()) as UrbanDictionaryResponse;
 
     if (!(responseData.list && responseData.list[0])) {
       await message.reply("Definition not found :\\");
