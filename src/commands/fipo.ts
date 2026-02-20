@@ -1,7 +1,7 @@
+import { db } from "$src/db.ts";
+import env from "$src/env.ts";
+import type { Command } from "$src/types.ts";
 import { type Message, TextChannel } from "discord.js";
-import { db } from "../db.ts";
-import env from "../env.ts";
-import type { Command } from "../types.ts";
 
 let todaysFipos: Message<boolean>[] = [];
 let recordedDate = "0-0-000";
@@ -27,7 +27,8 @@ export const fipo: Command = {
   command: "fipo",
   description: "do the fipo!",
   showInHelp: true,
-  match: (message: Message) => !message.author.bot,
+  match: (message: Message) =>
+    !message.author.bot && message.content === env.PREFIX + fipo.command,
   execute: (message: Message) => {
     // check if we need to reset the fipo
     const currentDate = getAsStringDateWithCorrectTimezoneForReal(new Date());

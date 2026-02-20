@@ -5,12 +5,23 @@ export type Command = {
   command: string | RegExp;
   description: string;
   showInHelp: boolean;
-  match?: (message: Message) => boolean;
+  match: (message: Message) => boolean;
   execute: (message: Message) => MaybePromiseVoid;
 };
 
-export const isCommand = (object: object) =>
-  "match" in object && "execute" in object;
+export const commandGuard = (obj: object) =>
+  "name" in obj &&
+  typeof obj.name === "string" &&
+  "command" in obj &&
+  (typeof obj.command === "string" || obj.command instanceof RegExp) &&
+  "description" in obj &&
+  typeof obj.description === "string" &&
+  "showInHelp" in obj &&
+  typeof obj.showInHelp === "boolean" &&
+  "match" in obj &&
+  typeof obj.match === "function" &&
+  "execute" in obj &&
+  typeof obj.execute === "function";
 
 export type BotEvent<T extends keyof ClientEvents> = {
   type: T;

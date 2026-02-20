@@ -1,5 +1,5 @@
+import type { Command } from "$src/types.ts";
 import type { Message } from "discord.js";
-import type { Command } from "../types.ts";
 
 export const funny: Command = {
   name: "funny",
@@ -7,6 +7,7 @@ export const funny: Command = {
     /^(pr dan)|((alles is stuk)|(stomme bot)|(alles( )?bot is stom)|(ik haat alles( )?bot)|(waarom kan alles( )?bot (.*) niet))$/i,
   description: "grappig (geen commando)",
   showInHelp: false,
+  match: (message: Message) => Boolean(message.content.match(funny.command)),
   execute: async (message: Message) => {
     if (
       message.content === "pr dan" &&

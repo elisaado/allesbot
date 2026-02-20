@@ -15,15 +15,19 @@ db.sql`
     discord_id TEXT NOT NULL UNIQUE,
     lastfm_username TEXT NOT NULL
   );
+`;
 
+db.sql`
   CREATE TABLE IF NOT EXISTS karma (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     subject TEXT NOT NULL UNIQUE,
     karma INTEGER NOT NULL
   );
+`;
 
-  DROP TABLE IF EXISTS fipo;
+db.sql`DROP TABLE IF EXISTS fipo;`;
 
+db.sql`
   CREATE TABLE IF NOT EXISTS fipos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     discord_id TEXT NOT NULL,

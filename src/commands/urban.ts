@@ -1,5 +1,6 @@
+import env from "$src/env.ts";
+import type { Command } from "$src/types.ts";
 import { EmbedBuilder, type Message } from "discord.js";
-import type { Command } from "../types.ts";
 
 export type UrbanDictionaryEntry = {
   author: string;
@@ -20,12 +21,12 @@ export type UrbanDictionaryResponse = {
 
 export const urban: Command = {
   name: "Urban Dictionary",
-  command: /^\.(ud|urban) (\d )?(\w+)$/,
+  command: /^.(ud|urban) (\d )?(\w+)$/,
   description: "Get the definition of a word from Urban Dictionary",
   showInHelp: true,
   match: (message: Message) =>
-    message.content.split(" ")[0] === ".ud" ||
-    message.content.split(" ")[0] === ".urban",
+    Boolean(message.content.match(urban.command)) &&
+    message.content[0] === env.PREFIX,
   execute: async (message: Message) => {
     const word = message.content.split(" ")[1];
 

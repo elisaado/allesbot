@@ -1,7 +1,7 @@
+import { db } from "$src/db.ts";
+import env from "$src/env.ts";
+import type { Command } from "$src/types.ts";
 import { EmbedBuilder, type Message } from "discord.js";
-import { db } from "../db.ts";
-import env from "../env.ts";
-import type { Command } from "../types.ts";
 
 export type Track = {
   name: string;
@@ -55,7 +55,8 @@ export const np: Command = {
   command: "np",
   description: "Shows your or someone else's currently playing track",
   showInHelp: true,
-  match: (message: Message) => message.content.split(" ")[0] === np.command,
+  match: (message: Message) =>
+    message.content.split(" ")[0] === env.PREFIX + np.command,
   execute: async (message: Message) => {
     let lastFMUsername = message.content.split(" ").slice(1).join();
 
@@ -126,7 +127,7 @@ export const setNPUser: Command = {
   description: "Sets the Last.fm username",
   showInHelp: true,
   match: (message: Message) =>
-    message.content.split(" ")[0] === setNPUser.command,
+    message.content.split(" ")[0] === env.PREFIX + setNPUser.command,
   execute: async (message: Message) => {
     const lastFMUsername: string = message.content.split(" ").slice(1).join();
 

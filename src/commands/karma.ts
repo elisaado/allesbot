@@ -1,6 +1,7 @@
+import { db } from "$src/db.ts";
+import env from "$src/env.ts";
+import type { Command } from "$src/types.ts";
 import type { Message } from "discord.js";
-import { db } from "../db.ts";
-import type { Command } from "../types.ts";
 
 const specialKarmaValues: [string | RegExp, number][] = [
   [/(alles( )?bot)|(<@1269730382765621288>)/, 9999999],
@@ -12,12 +13,20 @@ function getKarma(subject: string): number {
   subject = subject.toLowerCase();
   for (const [specialSubject, specialKarma] of specialKarmaValues) {
     if (
-      (typeof specialSubject === typeof RegExp && subject.match(specialSubject)) ||
+      (typeof specialSubject === typeof RegExp &&
+        subject.match(specialSubject)) ||
       (typeof specialSubject === "string" && subject === specialSubject)
-    ) return specialKarma;
+    )
+      return specialKarma;
   }
 
-  return (db.sql`SELECT karma FROM karma WHERE subject = ${subject}` as { karma?: number; }).karma ?? 0;
+  return (
+    (
+      db.sql`SELECT karma FROM karma WHERE subject = ${subject}` as {
+        karma?: number;
+      }
+    ).karma ?? 0
+  );
 }
 
 function setKarma(subject: string, newKarma: number): void {
@@ -29,6 +38,8 @@ export const getKarmaCommand: Command = {
   command: "karma",
   description: "Get karma of something",
   showInHelp: true,
+  match: (message: Message) =>
+    message.content === env.PREFIX + getKarmaCommand.command,
   execute: async (message: Message) => {
     const subject = message.content.split(" ").slice(1).join();
     await message.reply(`${subject} has **${getKarma(subject)} karma**`);

@@ -1,13 +1,13 @@
+import env from "$src/env.ts";
+import type { Command } from "$src/types.ts";
 import type { Message } from "discord.js";
-import env from "../env.ts";
-import type { Command } from "../types.ts";
 
 export const pin: Command = {
   name: "pin",
   command: "pin",
   description: "Pin een bericht",
   showInHelp: true,
-  match: (message: Message) => message.content === pin.command,
+  match: (message: Message) => message.content === env.PREFIX + pin.command,
   execute: async (message: Message) => {
     if (message.reference === null || message.reference.messageId === null) {
       await message.reply("omg gebruik dit op een bericht ofz");

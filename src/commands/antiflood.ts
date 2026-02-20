@@ -1,6 +1,6 @@
+import { client } from "$src/client.ts";
+import type { Command } from "$src/types.ts";
 import type { Message } from "discord.js";
-import { client } from "../client.ts";
-import type { Command } from "../types.ts";
 
 export type BucketContent = {
   lastTS: number;
@@ -17,7 +17,7 @@ export const antiflood: Command = {
   description: "niet spammen",
   showInHelp: false,
   match: (message: Message) =>
-    !(message.author.id === client.user?.id || message.author.bot),
+    !(message.author.id === client.user.id || message.author.bot),
   execute: async (message: Message) => {
     const now = new Date().valueOf();
     let bucket = buckets[message.author.id];

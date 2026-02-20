@@ -1,12 +1,13 @@
+import type { Command } from "$src/types.ts";
+import env from "$src/env.ts";
 import { type Message, TextChannel } from "discord.js";
-import type { Command } from "../types.ts";
 
 export const ping: Command = {
   name: "ping",
   command: "ping",
   description: "Replies with pong and the latency",
   showInHelp: true,
-  match: (message: Message) => message.content === ping.command,
+  match: (message: Message) => message.content === env.PREFIX + ping.command,
   execute: async (message: Message) => {
     const diff = Date.now() - message.createdTimestamp;
     await message.reply(`Pong! Latency: ${diff}ms`);
@@ -18,7 +19,9 @@ export const editPing: Command = {
   command: /.editping/i,
   description: "Measures the latency by editing the message",
   showInHelp: true,
-  match: (message: Message) => Boolean(message.content.match(editPing.command)),
+  match: (message: Message) =>
+    Boolean(message.content.match(editPing.command)) &&
+    message.content[0] === env.PREFIX,
   execute: async (message: Message) => {
     if (!(message.channel instanceof TextChannel)) return;
 

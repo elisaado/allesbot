@@ -1,6 +1,6 @@
+import { client } from "$src/client.ts";
+import type { Command } from "$src/types.ts";
 import type { Message } from "discord.js";
-import { client } from "../client.ts";
-import type { Command } from "../types.ts";
 // thank you for the list, https://stackoverflow.com/questions/76372936/what-is-the-most-efficient-way-to-remove-tracking-marketing-etc-query-parameter
 import badKeys from "$static/badKeys.json" with { type: "json" };
 
@@ -24,7 +24,7 @@ export const vuileLink: Command = {
     if (!parsedUrl) return;
 
     // we can't delete because the for loop internally keeps an index which will shift we we delete
-    const toDelete = [];
+    const toDelete: string[] = [];
     for (const key of parsedUrl.searchParams.keys()) {
       if (badKeys.includes(key)) toDelete.push(key);
     }

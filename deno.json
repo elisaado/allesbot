@@ -12,6 +12,7 @@
     "$static/": "./static/",
 
     "@db/sqlite": "jsr:@db/sqlite@^0.12.0",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.6",
     "discord.js": "npm:discord.js@^14.24.2",
     "zod": "npm:zod@^4.1.12"
   },
