@@ -3,7 +3,7 @@ import env from "./env.ts";
 import { type BotEvent, botEventGuard } from "./types.ts";
 
 const eventFiles = Deno.readDirSync("src/events").filter((file) =>
-  file.name.endsWith(".ts"),
+  file.name.endsWith(".ts")
 );
 
 for (const eventFile of eventFiles) {

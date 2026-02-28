@@ -1,33 +1,37 @@
 import { type ClientEvents, Events, type Message } from "discord.js";
 
-export type Command = {
+export interface CommandConstruct {
   name: string;
   command: string | RegExp;
   description: string;
   showInHelp: boolean;
   match: (message: Message) => boolean;
   execute: (message: Message) => MaybePromiseVoid;
-};
+}
 
-export const commandGuard = (obj: object) =>
-  "name" in obj &&
-  typeof obj.name === "string" &&
-  "command" in obj &&
-  (typeof obj.command === "string" || obj.command instanceof RegExp) &&
-  "description" in obj &&
-  typeof obj.description === "string" &&
-  "showInHelp" in obj &&
-  typeof obj.showInHelp === "boolean" &&
-  "match" in obj &&
-  typeof obj.match === "function" &&
-  "execute" in obj &&
-  typeof obj.execute === "function";
+export class Command {
+  name: string;
+  command: string | RegExp;
+  description: string;
+  showInHelp: boolean;
+  match: (message: Message) => boolean;
+  execute: (message: Message) => MaybePromiseVoid;
 
-export type BotEvent<T extends keyof ClientEvents> = {
+  constructor(obj: CommandConstruct) {
+    this.name = obj.name;
+    this.command = obj.command;
+    this.description = obj.description;
+    this.showInHelp = obj.showInHelp;
+    this.match = obj.match;
+    this.execute = obj.execute;
+  }
+}
+
+export interface BotEvent<T extends keyof ClientEvents> {
   type: T;
   once?: boolean;
   execute: (...args: ClientEvents[T]) => void;
-};
+}
 
 export const botEventGuard = (object: object) =>
   "type" in object &&

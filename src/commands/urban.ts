@@ -58,7 +58,8 @@ export const urban: Command = {
       .setDescription(embeddedData.definition)
       .setURL(embeddedData.permalink)
       .setFooter({
-        text: `By ${embeddedData.author}\n👍 ${embeddedData.thumbs_up} | 👎 ${embeddedData.thumbs_down}`,
+        text:
+          `By ${embeddedData.author}\n👍 ${embeddedData.thumbs_up} | 👎 ${embeddedData.thumbs_down}`,
       })
       .setThumbnail("https://cdn.elisaado.com/ud_logo.jpeg")
       .setColor(0xf2fd60);

@@ -53,8 +53,8 @@ export const sed: Command = {
 
     if (replyMessage.author.id === client.user.id) return;
 
-    const oldContent =
-      replyMessage.content || replyMessage.embeds[0].description || "";
+    const oldContent = replyMessage.content ||
+      replyMessage.embeds[0].description || "";
     const newContent = oldContent.replace(
       new RegExp(find, options ?? "g"),
       replace.replace(/\\(.)/g, "$1"),

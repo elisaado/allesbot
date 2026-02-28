@@ -3,21 +3,16 @@ import env from "$src/env.ts";
 import type { Command } from "$src/types.ts";
 import type { Message } from "discord.js";
 
-const specialKarmaValues: [string | RegExp, number][] = [
+const specialKarmaValues: [RegExp, number][] = [
   [/(alles( )?bot)|(<@1269730382765621288>)/, 9999999],
-  ["typst", 9999998],
+  [/typst/, 9999998],
   [/SEKS( :bangbang:)?/, 9999997],
 ];
 
 function getKarma(subject: string): number {
   subject = subject.toLowerCase();
   for (const [specialSubject, specialKarma] of specialKarmaValues) {
-    if (
-      (typeof specialSubject === typeof RegExp &&
-        subject.match(specialSubject)) ||
-      (typeof specialSubject === "string" && subject === specialSubject)
-    )
-      return specialKarma;
+    if (subject.match(specialSubject)) return specialKarma;
   }
 
   return (

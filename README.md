@@ -37,7 +37,8 @@ Maakt de client aan
 
 ### `collectCommands.ts`
 
-Spreekt voor zich, verzamelt alle exports in `commands/` en filtert alles wat geen command is eruit.
+Spreekt voor zich, verzamelt alle exports in `commands/` en filtert alles wat
+geen command is eruit.
 
 ### `customTypes.d.ts`
 
@@ -49,15 +50,19 @@ Maakt en de database en maakt een paar tabellen
 
 ### `env.ts`
 
-Leest de `.env` uit en checkt of alle variables aanwezig zijn. Daarna print het de eerste 5 chars van alle values zodat je kan checken of ze ook kloppen.
+Leest de `.env` uit en checkt of alle variables aanwezig zijn. Daarna print het
+de eerste 5 chars van alle values zodat je kan checken of ze ook kloppen.
 
 ### `index.ts`
 
-Vergelijkbaar met `collectCommands.ts`, maar in plaats van commands collect het de events uit `events/`. Daarna logt het ook in zodat mensen allesbot kunnen gebruiken.
+Vergelijkbaar met `collectCommands.ts`, maar in plaats van commands collect het
+de events uit `events/`. Daarna logt het ook in zodat mensen allesbot kunnen
+gebruiken.
 
 ### `sigHandler.ts`
 
-Zorgt ervoor dat de database goed afgesloten wordt wanneer nodig, en voorkomt dat data gecorrupt wordt.
+Zorgt ervoor dat de database goed afgesloten wordt wanneer nodig, en voorkomt
+dat data gecorrupt wordt.
 
 ### `utils.ts`
 
