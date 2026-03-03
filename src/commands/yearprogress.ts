@@ -1,14 +1,15 @@
 import env from "$src/env.ts";
-import type { Command } from "$src/types.ts";
+import { Command } from "$src/types.ts";
 import type { Message } from "discord.js";
 
-export const yearprogress: Command = {
+export const yearprogress = new Command({
   name: "year progress",
   command: "yp",
   description: "hoe ver is het jaar",
   showInHelp: true,
-  match: (message: Message) =>
-    message.content === env.PREFIX + yearprogress.command,
+  match(message: Message): boolean {
+    return message.content === env.PREFIX + yearprogress.command;
+  },
   execute: async (message: Message) => {
     const millisPerDay = 86400000;
     const date = new Date();
@@ -20,9 +21,9 @@ export const yearprogress: Command = {
     const maxDay = (end - start) / millisPerDay;
 
     await message.reply(
-      `We zijn al ysu **${
-        ((currentDay / maxDay) * 100).toFixed(1)
-      }%** in het jaar`,
+      `We zijn al ysu **${((currentDay / maxDay) * 100).toFixed(
+        1,
+      )}%** in het jaar`,
     );
   },
-};
+});

@@ -1,6 +1,6 @@
 import { db } from "$src/db.ts";
 import env from "$src/env.ts";
-import type { Command } from "$src/types.ts";
+import { Command } from "$src/types.ts";
 import { type Message, TextChannel } from "discord.js";
 
 let todaysFipos: Message<boolean>[] = [];
@@ -22,13 +22,18 @@ function getDayOfDateWithCorrectTimezoneForReal(date: Date): string {
   });
 }
 
-export const fipo: Command = {
+export const fipo = new Command({
   name: "fipo",
   command: "fipo",
   description: "do the fipo!",
   showInHelp: true,
-  match: (message: Message) =>
-    !message.author.bot && message.content === env.PREFIX + fipo.command,
+  match(message: Message): boolean {
+    return (
+      !message.author.bot &&
+      message.content === env.PREFIX + fipo.command &&
+      message.channelId === env.FIPO_CHANNEL_ID
+    );
+  },
   execute: (message: Message) => {
     // check if we need to reset the fipo
     const currentDate = getAsStringDateWithCorrectTimezoneForReal(new Date());
@@ -93,14 +98,16 @@ export const fipo: Command = {
       )})`;
     }, 1000);
   },
-};
+});
 
-export const fipoStats: Command = {
+export const fipoStats = new Command({
   name: "fipostats",
   command: "fipostats",
   description: "Check the fipo stats",
   showInHelp: true,
-  match: (message: Message) => message.content === fipoStats.command,
+  match(message: Message): boolean {
+    return message.content === fipoStats.command;
+  },
   execute: async (message: Message) => {
     if (!message.guild) return;
 
@@ -136,14 +143,16 @@ export const fipoStats: Command = {
     }
     message.reply(returnMessage + "```");
   },
-};
+});
 
-export const fipoReset: Command = {
+export const fipoReset = new Command({
   name: "Fipo Reset",
   command: "fiporeset",
   description: "Reset the fipo stats",
   showInHelp: false,
-  match: (message: Message) => message.content === fipoReset.command,
+  match(message: Message): boolean {
+    return message.content === fipoReset.command;
+  },
   execute: async (message: Message) => {
     if (message.author.id !== env.HOUSEMASTER_ID) {
       await message.reply("You are not allowed to do that!");
@@ -162,4 +171,4 @@ export const fipoReset: Command = {
       return;
     }
   },
-};
+});

@@ -1,5 +1,5 @@
 import env from "$src/env.ts";
-import type { Command } from "$src/types.ts";
+import { Command } from "$src/types.ts";
 import { EmbedBuilder, type Message } from "discord.js";
 
 export type UrbanDictionaryEntry = {
@@ -19,14 +19,17 @@ export type UrbanDictionaryResponse = {
   list: UrbanDictionaryEntry[];
 };
 
-export const urban: Command = {
+export const urban = new Command({
   name: "Urban Dictionary",
   command: /^.(ud|urban) (\d )?(\w+)$/,
   description: "Get the definition of a word from Urban Dictionary",
   showInHelp: true,
-  match: (message: Message) =>
-    Boolean(message.content.match(urban.command)) &&
-    message.content[0] === env.PREFIX,
+  match(message: Message): boolean {
+    return (
+      Boolean(message.content.match(urban.command)) &&
+      message.content[0] === env.PREFIX
+    );
+  },
   execute: async (message: Message) => {
     const word = message.content.split(" ")[1];
 
@@ -58,8 +61,7 @@ export const urban: Command = {
       .setDescription(embeddedData.definition)
       .setURL(embeddedData.permalink)
       .setFooter({
-        text:
-          `By ${embeddedData.author}\n👍 ${embeddedData.thumbs_up} | 👎 ${embeddedData.thumbs_down}`,
+        text: `By ${embeddedData.author}\n👍 ${embeddedData.thumbs_up} | 👎 ${embeddedData.thumbs_down}`,
       })
       .setThumbnail("https://cdn.elisaado.com/ud_logo.jpeg")
       .setColor(0xf2fd60);
@@ -68,4 +70,4 @@ export const urban: Command = {
       embeds: [udEmbed],
     });
   },
-};
+});

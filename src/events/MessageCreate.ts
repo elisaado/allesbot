@@ -1,9 +1,10 @@
 import { commands } from "$src/collectCommands.ts";
-import type { BotEvent } from "$src/types.ts";
+import { BotEvent } from "$src/types.ts";
 import { Events, type Message, TextChannel } from "discord.js";
 
-export const commandEvent: BotEvent<Events.MessageCreate> = {
+export const commandEvent = new BotEvent<Events.MessageCreate>({
   type: Events.MessageCreate,
+  once: false,
   execute: (message: Message) => {
     if (!(message.channel instanceof TextChannel)) return;
 
@@ -11,4 +12,4 @@ export const commandEvent: BotEvent<Events.MessageCreate> = {
       if (command.match(message)) command.execute(message);
     }
   },
-};
+});

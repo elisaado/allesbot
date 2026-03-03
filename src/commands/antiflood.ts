@@ -1,5 +1,5 @@
 import { client } from "$src/client.ts";
-import type { Command } from "$src/types.ts";
+import { Command } from "$src/types.ts";
 import type { Message } from "discord.js";
 
 export type BucketContent = {
@@ -11,7 +11,7 @@ export type BucketContent = {
 const maxBucketSize = 10 as const;
 const buckets: Record<string, BucketContent> = {};
 
-export const antiflood: Command = {
+export const antiflood = new Command({
   name: "antiflood",
   command: /.+/,
   description: "niet spammen",
@@ -60,4 +60,4 @@ export const antiflood: Command = {
 
     buckets[message.author.id] = { ...bucket, lastTS: now };
   },
-};
+});

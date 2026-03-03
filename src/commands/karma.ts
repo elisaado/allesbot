@@ -1,6 +1,6 @@
 import { db } from "$src/db.ts";
 import env from "$src/env.ts";
-import type { Command } from "$src/types.ts";
+import { Command } from "$src/types.ts";
 import type { Message } from "discord.js";
 
 const specialKarmaValues: [RegExp, number][] = [
@@ -28,26 +28,28 @@ function setKarma(subject: string, newKarma: number): void {
   db.sql`INSERT OR REPLACE INTO karma (subject, karma) VALUES (${subject}, ${newKarma})`;
 }
 
-export const getKarmaCommand: Command = {
+export const getKarmaCommand = new Command({
   name: "getKarma",
   command: "karma",
   description: "Get karma of something",
   showInHelp: true,
-  match: (message: Message) =>
-    message.content === env.PREFIX + getKarmaCommand.command,
+  match(message: Message): boolean {
+    return message.content === env.PREFIX + getKarmaCommand.command;
+  },
   execute: async (message: Message) => {
     const subject = message.content.split(" ").slice(1).join();
     await message.reply(`${subject} has **${getKarma(subject)} karma**`);
   },
-};
+});
 
-export const setKarmaCommand: Command = {
+export const setKarmaCommand = new Command({
   name: "setKarma",
   command: /.*(\+\+|--)$/g,
   description: "Increase or decrease the karma of something",
   showInHelp: true,
-  match: (message) =>
-    message.content.endsWith("--") || message.content.endsWith("++"),
+  match(message): boolean {
+    return message.content.endsWith("--") || message.content.endsWith("++");
+  },
   execute: async (message: Message) => {
     const subject = message.content
       .substring(0, message.content.length - 2)
@@ -56,4 +58,4 @@ export const setKarmaCommand: Command = {
     setKarma(subject, oldKarma + (message.content.endsWith("++") ? 1 : -1));
     await message.reply(`${subject} now has **${getKarma(subject)} karma**`);
   },
-};
+});

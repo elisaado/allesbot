@@ -1,17 +1,17 @@
 import { db } from "$src/db.ts";
 import env from "$src/env.ts";
-import type { Command } from "$src/types.ts";
+import { Command } from "$src/types.ts";
 import { EmbedBuilder, type Message } from "discord.js";
 
-export type Track = {
+interface Track {
   name: string;
   album: string;
   artist: string;
   image: string;
   url: string;
-};
+}
 
-export type LastFMTrack = {
+interface LastFMTrack {
   artist: {
     mbid: string;
     "#text": string;
@@ -35,9 +35,9 @@ export type LastFMTrack = {
   "@attr"?: {
     nowplaying: boolean;
   };
-};
+}
 
-export type LastFMData = {
+interface LastFMData {
   recenttracks: {
     track: LastFMTrack[];
     "@attr": {
@@ -48,24 +48,23 @@ export type LastFMData = {
       total: string;
     };
   };
-};
+}
 
-export const np: Command = {
+export const np = new Command({
   name: "np",
   command: "np",
   description: "Shows your or someone else's currently playing track",
   showInHelp: true,
-  match: (message: Message) =>
-    message.content.split(" ")[0] === env.PREFIX + np.command,
+  match(message: Message): boolean {
+    return message.content.split(" ")[0] === env.PREFIX + np.command;
+  },
   execute: async (message: Message) => {
     let lastFMUsername = message.content.split(" ").slice(1).join();
 
     // Check of er een arg is
     if (!lastFMUsername) {
       lastFMUsername =
-        db.sql`SELECT lastfm_username FROM users WHERE discord_id = ${message.author.id}`[
-          0
-        ]
+        db.sql`SELECT lastfm_username FROM users WHERE discord_id = ${message.author.id}`[0]
           .lastfm_username;
 
       // als thing undefined is, is er geen username in de db
@@ -74,17 +73,13 @@ export const np: Command = {
         return;
       }
     } else if (
-      !db
-        .sql`SELECT discord_id FROM users WHERE lastfm_username = ${lastFMUsername}`[
-          0
-        ]
+      !db.sql`SELECT discord_id FROM users WHERE lastfm_username = ${lastFMUsername}`[0]
     ) {
       await message.reply("die username heb ik niet, maat");
       return;
     }
 
-    const baseUrl =
-      `http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${lastFMUsername}&api_key=${env.LASTFM_API_KEY}&format=json`;
+    const baseUrl = `http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${lastFMUsername}&api_key=${env.LASTFM_API_KEY}&format=json`;
     const response = await fetch(baseUrl);
 
     if (!response.ok) {
@@ -108,8 +103,8 @@ export const np: Command = {
       url: recentlyPlayed[0].url,
     };
 
-    const pfpURL = message.author.avatarURL() ??
-      message.author.defaultAvatarURL;
+    const pfpURL =
+      message.author.avatarURL() ?? message.author.defaultAvatarURL;
 
     const trackEmbed = new EmbedBuilder()
       .setTitle(nowPlaying.name)
@@ -125,7 +120,7 @@ export const np: Command = {
       embeds: [trackEmbed],
     });
   },
-};
+});
 
 export const setNPUser: Command = {
   name: "setnpuser",

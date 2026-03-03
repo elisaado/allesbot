@@ -1,14 +1,5 @@
 import { type ClientEvents, Events, type Message } from "discord.js";
 
-export interface CommandConstruct {
-  name: string;
-  command: string | RegExp;
-  description: string;
-  showInHelp: boolean;
-  match: (message: Message) => boolean;
-  execute: (message: Message) => MaybePromiseVoid;
-}
-
 export class Command {
   name: string;
   command: string | RegExp;
@@ -17,7 +8,7 @@ export class Command {
   match: (message: Message) => boolean;
   execute: (message: Message) => MaybePromiseVoid;
 
-  constructor(obj: CommandConstruct) {
+  constructor(obj: Command) {
     this.name = obj.name;
     this.command = obj.command;
     this.description = obj.description;
@@ -27,10 +18,16 @@ export class Command {
   }
 }
 
-export interface BotEvent<T extends keyof ClientEvents> {
+export class BotEvent<T extends keyof ClientEvents> {
   type: T;
-  once?: boolean;
+  once: boolean;
   execute: (...args: ClientEvents[T]) => void;
+
+  constructor(obj: BotEvent<T>) {
+    this.type = obj.type;
+    this.once = obj.once;
+    this.execute = obj.execute;
+  }
 }
 
 export const botEventGuard = (object: object) =>

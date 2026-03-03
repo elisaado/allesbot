@@ -1,16 +1,19 @@
 import { client } from "$src/client.ts";
 import env from "$src/env.ts";
-import type { Command } from "$src/types.ts";
+import { Command } from "$src/types.ts";
 import type { Message } from "discord.js";
 
-export const sed: Command = {
+export const sed = new Command({
   name: "sed",
   command: /^.s`?\/`?((?:\\.|[^\/])*)\/((?:\\.|[^\/])*?)(\/(.*?))?$/,
   description: "Use sed to replace text in the replied to message",
   showInHelp: true,
-  match: (message: Message) =>
-    Boolean(message.content.match(sed.command)) &&
-    message.content[0] === env.PREFIX,
+  match(message: Message): boolean {
+    return (
+      Boolean(message.content.match(sed.command)) &&
+      message.content[0] === env.PREFIX
+    );
+  },
   execute: async (message: Message) => {
     if (!(message.reference && message.reference.messageId)) {
       await message.reply(
@@ -53,8 +56,8 @@ export const sed: Command = {
 
     if (replyMessage.author.id === client.user.id) return;
 
-    const oldContent = replyMessage.content ||
-      replyMessage.embeds[0].description || "";
+    const oldContent =
+      replyMessage.content || replyMessage.embeds[0].description || "";
     const newContent = oldContent.replace(
       new RegExp(find, options ?? "g"),
       replace.replace(/\\(.)/g, "$1"),
@@ -70,4 +73,4 @@ export const sed: Command = {
       content: `Did you mean:\n${newContent}`,
     });
   },
-};
+});
